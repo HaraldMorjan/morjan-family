@@ -1,19 +1,23 @@
 /**
  * Trip catalog for trips.morjan.family
  *
- * Storage recommendation (so photos don’t get lost):
- * 1. ORIGINALS (backup) — Google Drive / external SSD. Never only on the website.
- * 2. WEB copies — Cloudflare R2 bucket, folders per trip id, e.g.
- *    guatemala-highlands-2024/01.jpg … 50.jpg
- *    Public URL example: https://media.morjan.family/guatemala-highlands-2024/01.jpg
- * 3. THIS FILE — only metadata + URLs (or short local paths for tiny placeholders).
+ * Photo hosting (wired):
+ *   Bucket:  morjan-trips (Cloudflare R2)
+ *   Public:  https://media.morjan.family/<trip-id>/<file>
+ *   Setup:   bash scripts/setup-media-r2.sh
+ *   Upload:  bash scripts/upload-trip-photos.sh <trip-id> <local-folder>
  *
- * Do not commit dozens of large JPEGs into Git. Use R2 (or similar) for galleries.
- *
- * Each trip:
- *   cover  — card image (optional; falls back to photos[0])
- *   photos — gallery list (R2 URLs or local "img/..." paths)
+ * Keep full-quality originals in Google Drive / external SSD.
+ * This file only stores metadata + URLs (or tiny local placeholders).
  */
+window.MORJAN_MEDIA_BASE = "https://media.morjan.family";
+
+window.morjanMediaUrl = (tripId, fileName) =>
+  `${window.MORJAN_MEDIA_BASE}/${tripId}/${fileName}`;
+
+window.morjanTripPhotos = (tripId, fileNames) =>
+  fileNames.map((fileName) => window.morjanMediaUrl(tripId, fileName));
+
 window.MORJAN_TRIPS = [
   {
     id: "guatemala-highlands-2024",
@@ -21,12 +25,15 @@ window.MORJAN_TRIPS = [
     place: "Antigua & Lake Atitlán, Guatemala",
     dates: "2024",
     blurb: "Volcano views, markets, and slow mornings by the lake.",
-    cover: "img/placeholder-highlands.svg",
-    photos: [
-      "img/placeholder-highlands.svg",
-      "img/placeholder-beach.svg",
-      "img/placeholder-city.svg"
-    ],
+    cover: morjanMediaUrl(
+      "guatemala-highlands-2024",
+      "placeholder-highlands.svg"
+    ),
+    photos: morjanTripPhotos("guatemala-highlands-2024", [
+      "placeholder-highlands.svg",
+      "placeholder-beach.svg",
+      "placeholder-city.svg"
+    ]),
     tags: ["family", "nature"]
   },
   {

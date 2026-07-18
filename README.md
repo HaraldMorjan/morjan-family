@@ -20,43 +20,47 @@ Each app under `apps/` is independent (own Pages project + custom domain).
 npx --yes serve apps/arianna
 ```
 
-## Trips content & photo storage
+## Trips content & photo storage (R2)
 
-**Do not put 50 trip JPEGs in Git.** Use this split so nothing gets lost:
+**Do not put 50 trip JPEGs in Git.**
 
 | Layer | Where | Purpose |
 | --- | --- | --- |
 | Originals | Google Drive / external SSD | True backup (full quality) |
-| Web copies | **Cloudflare R2** (recommended) | Site gallery; cheap, durable, outside Git |
-| Catalog | `apps/trips/data.js` | Titles, places, and photo **URLs** only |
+| Web copies | R2 bucket `morjan-trips` → `https://media.morjan.family` | Gallery delivery |
+| Catalog | `apps/trips/data.js` | Metadata + URLs only |
 
-### Recommended R2 layout
+### One-time setup
 
-- Bucket: e.g. `morjan-trips`
-- Folders per trip id: `guatemala-highlands-2024/01.jpg` … `50.jpg`
-- Optional custom domain: `media.morjan.family`
-- In `data.js`, list full URLs in `photos` (and set `cover` to the hero shot)
-
-### Local placeholders only
-
-Tiny demo assets can stay in `apps/trips/img/`. Real family albums should live in R2.
-
-### Per-trip gallery fields
-
-```js
-{
-  id: "guatemala-highlands-2024",
-  title: "Guatemala Highlands",
-  cover: "https://media.morjan.family/guatemala-highlands-2024/01.jpg",
-  photos: [
-    "https://media.morjan.family/guatemala-highlands-2024/01.jpg",
-    "https://media.morjan.family/guatemala-highlands-2024/02.jpg"
-    // …up to 50+
-  ]
-}
+```bash
+npx wrangler login
+bash scripts/setup-media-r2.sh
 ```
 
+That creates bucket `morjan-trips` and attaches custom domain `media.morjan.family`.
+
+### Upload a trip album
+
+Compress/export web-sized photos first, then:
+
+```bash
+bash scripts/upload-trip-photos.sh guatemala-highlands-2024 ./path/to/photos
+```
+
+The script prints ready-to-paste `cover` / `photos` lines for `apps/trips/data.js`.
+
+Helpers already in `data.js`:
+
+```js
+cover: morjanMediaUrl("guatemala-highlands-2024", "01.jpg"),
+photos: morjanTripPhotos("guatemala-highlands-2024", ["01.jpg", "02.jpg"]),
+```
+
+Tiny placeholders may stay in `apps/trips/img/`. Real albums go to R2.
+
 Click a trip card (or **View gallery**) to open the lightbox.
+
+**Later:** phone upload → Google Drive (original) + R2 (web) + gallery — see [`docs/trips-phone-upload-plan.md`](docs/trips-phone-upload-plan.md).
 
 ## Cloudflare Pages (one project per app)
 

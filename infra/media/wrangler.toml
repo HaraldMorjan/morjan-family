@@ -1,0 +1,12 @@
+# Cloudflare R2 media bucket for trips.morjan.family galleries.
+# Managed via scripts/setup-media-r2.sh and scripts/upload-trip-photos.sh
+#
+# Bucket: morjan-trips
+# Public host: https://media.morjan.family/<trip-id>/<file>
+
+name = "morjan-media"
+compatibility_date = "2026-07-17"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "morjan-trips"
