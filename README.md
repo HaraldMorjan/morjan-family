@@ -10,6 +10,7 @@ Under-construction site for the Morjan family domains, hosted on Cloudflare Page
 - `harald.morjan.family`
 - `katy.morjan.family`
 - `arianna.morjan.family`
+- `trips.morjan.family`
 
 ## Local preview
 

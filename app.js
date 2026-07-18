@@ -32,6 +32,10 @@
     "arianna.morjan.family": {
       space: "Arianna",
       lead: "Arianna’s space is under construction."
+    },
+    "trips.morjan.family": {
+      space: "Trips",
+      lead: "Family trips is under construction."
     }
   };
 
