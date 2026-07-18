@@ -25,7 +25,9 @@
     <main class="content">
       <section class="toolbar">
         <h2>Journey log</h2>
-        <p class="hint">Edit <code>data.js</code> and drop images into <code>img/</code>.</p>
+        <p class="hint">
+          Edit <code>data.js</code>. Store gallery photos in Cloudflare R2 (see README).
+        </p>
       </section>
       <section id="tripGrid" class="trip-grid" aria-live="polite"></section>
     </main>
@@ -33,6 +35,28 @@
     <footer class="footer">
       <p id="hostLabel"></p>
     </footer>
+
+    <dialog class="gallery-dialog" id="galleryDialog" aria-labelledby="galleryTitle">
+      <div class="gallery-shell">
+        <header class="gallery-header">
+          <h2 id="galleryTitle">Gallery</h2>
+          <p class="gallery-counter" id="galleryCounter" aria-live="polite"></p>
+          <button type="button" class="gallery-close" id="galleryCloseButton" aria-label="Close gallery">
+            Close
+          </button>
+        </header>
+        <div class="gallery-stage">
+          <button type="button" class="gallery-nav gallery-nav-prev" id="galleryPreviousButton" aria-label="Previous photo">
+            ‹
+          </button>
+          <img id="galleryStageImage" class="gallery-stage-image" alt="" />
+          <button type="button" class="gallery-nav gallery-nav-next" id="galleryNextButton" aria-label="Next photo">
+            ›
+          </button>
+        </div>
+        <div class="gallery-thumbs" id="galleryThumbs"></div>
+      </div>
+    </dialog>
 
     <script src="./data.js"></script>
     <script src="./app.js"></script>
