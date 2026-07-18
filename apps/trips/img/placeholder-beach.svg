@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Beach placeholder">
+  <rect width="800" height="280" fill="#38bdf8"/>
+  <rect y="280" width="800" height="220" fill="#fcd34d"/>
+  <path d="M0 270 Q200 240 400 275 T800 260 L800 320 Q400 350 0 320 Z" fill="#0ea5e9"/>
+  <circle cx="120" cy="90" r="38" fill="#fef08a"/>
+  <text x="40" y="460" fill="#78350f" font-family="Georgia, serif" font-size="28">Pacific</text>
+</svg>

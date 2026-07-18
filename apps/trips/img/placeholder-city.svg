@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="City placeholder">
+  <rect width="800" height="500" fill="#cbd5e1"/>
+  <rect y="0" width="800" height="220" fill="#94a3b8"/>
+  <rect x="80" y="180" width="90" height="220" fill="#334155"/>
+  <rect x="200" y="140" width="110" height="260" fill="#1e293b"/>
+  <rect x="340" y="200" width="80" height="200" fill="#475569"/>
+  <rect x="450" y="120" width="130" height="280" fill="#0f172a"/>
+  <rect x="610" y="170" width="100" height="230" fill="#334155"/>
+  <rect y="400" width="800" height="100" fill="#64748b"/>
+  <text x="40" y="60" fill="#0f172a" font-family="Georgia, serif" font-size="28">City</text>
+</svg>

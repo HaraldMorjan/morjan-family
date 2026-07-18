@@ -1,0 +1,111 @@
+:root {
+  --ink: #2a1a14;
+  --ink-soft: #6b4a3c;
+  --paper: #fff7f2;
+  --coral: #e85d4c;
+  --coral-deep: #b33b2d;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background: var(--paper);
+  overflow-x: hidden;
+}
+
+.glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 20%, rgba(232, 93, 76, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 90% 70%, rgba(243, 196, 164, 0.55), transparent 50%),
+    linear-gradient(155deg, #fff9f5 0%, #ffe8dc 48%, #ffd8c8 100%);
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 5rem);
+  max-width: 48rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--coral);
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(4.2rem, 13vw, 6.8rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--coral-deep);
+}
+
+.lead {
+  margin: 1.25rem 0 0;
+  max-width: 32rem;
+  font-size: clamp(1.1rem, 2.3vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+}
+
+.pillars article {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(232, 93, 76, 0.2);
+}
+
+.pillars h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--coral-deep);
+}
+
+.pillars p {
+  margin: 0.45rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.host {
+  margin: 1.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--coral);
+}

@@ -1,0 +1,190 @@
+:root {
+  --ink: #12262b;
+  --ink-soft: #3a555c;
+  --paper: #f3fafb;
+  --ocean: #0e7490;
+  --ocean-deep: #155e75;
+  --card: #ffffff;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(14, 116, 144, 0.14), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 20%, rgba(231, 213, 181, 0.55), transparent 45%),
+    linear-gradient(180deg, #f7fcfd 0%, #eef7f9 40%, #e7f1f3 100%);
+}
+
+.hero {
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(1.5rem, 5vw, 4rem) 1.5rem;
+  max-width: 64rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  color: var(--ocean);
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.8rem, 12vw, 6.2rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--ocean-deep);
+}
+
+.lead {
+  margin: 1rem 0 0;
+  max-width: 34rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.content {
+  padding: 0 clamp(1.5rem, 5vw, 4rem) 3rem;
+  max-width: 64rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.toolbar h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--ocean-deep);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.hint code {
+  font-size: 0.9em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+  background: rgba(14, 116, 144, 0.1);
+}
+
+.trip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  gap: 1.1rem;
+}
+
+.trip-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 1px solid rgba(21, 94, 117, 0.12);
+  box-shadow: 0 10px 28px rgba(18, 38, 43, 0.06);
+}
+
+.trip-cover {
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  object-fit: cover;
+  background: #d9eef3;
+  display: block;
+}
+
+.trip-body {
+  padding: 1rem 1.1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.trip-dates {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ocean);
+}
+
+.trip-body h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--ink);
+}
+
+.trip-place {
+  margin: 0;
+  font-weight: 600;
+  color: var(--ocean-deep);
+  font-size: 0.95rem;
+}
+
+.trip-blurb {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+  line-height: 1.45;
+  font-size: 0.98rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(14, 116, 144, 0.1);
+  color: var(--ocean-deep);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.empty {
+  padding: 2rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink-soft);
+}
+
+.footer {
+  padding: 1rem clamp(1.5rem, 5vw, 4rem) 2rem;
+  color: var(--ocean);
+  font-size: 0.9rem;
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Morjan family trips — places, photos, memories." />
+    <title>Trips · Morjan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">Morjan family</p>
+      <h1 class="brand">Trips</h1>
+      <p class="lead">
+        Places we’ve been, photos we love, and notes for the next adventure.
+      </p>
+    </header>
+
+    <main class="content">
+      <section class="toolbar">
+        <h2>Journey log</h2>
+        <p class="hint">Edit <code>data.js</code> and drop images into <code>img/</code>.</p>
+      </section>
+      <section id="tripGrid" class="trip-grid" aria-live="polite"></section>
+    </main>
+
+    <footer class="footer">
+      <p id="hostLabel"></p>
+    </footer>
+
+    <script src="./data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

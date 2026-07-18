@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Helen Morjan — mechatronics student." />
+    <title>Helen · Morjan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="grid" aria-hidden="true"></div>
+    <main class="stage">
+      <p class="eyebrow">Mechatronics · student</p>
+      <h1 class="brand">Helen</h1>
+      <p class="lead">
+        Circuits, mechanisms, and code — Helen’s mechatronics lab on the web is
+        under construction.
+      </p>
+      <ul class="chips" aria-label="Focus areas">
+        <li>Sensors</li>
+        <li>Actuators</li>
+        <li>Control</li>
+        <li>Embedded</li>
+      </ul>
+      <pre class="schematic" aria-hidden="true">┌── MCU ──┬── MOTOR
+│         └── SENSOR
+└── PWR ─────────┘</pre>
+      <p class="host" id="hostLabel"></p>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

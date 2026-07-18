@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Harald Morjan — software developer." />
+    <title>Harald · Morjan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="terminal-bg" aria-hidden="true"></div>
+    <main class="stage">
+      <p class="eyebrow">software developer</p>
+      <h1 class="brand">Harald</h1>
+      <p class="lead">
+        Building systems, APIs, and family tech. This workspace is compiling…
+        under construction.
+      </p>
+      <div class="terminal" role="img" aria-label="Terminal snippet">
+        <div class="terminal-bar">
+          <span></span><span></span><span></span>
+        </div>
+        <pre class="terminal-body"><code><span class="prompt">$</span> whoami
+harald.morjan
+<span class="prompt">$</span> status --site
+<span class="ok">under_construction</span>
+<span class="prompt">$</span> stack
+ts · cloud · dx</code></pre>
+      </div>
+      <p class="host" id="hostLabel"></p>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

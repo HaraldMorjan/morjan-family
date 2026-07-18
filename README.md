@@ -1,38 +1,39 @@
 # morjan.family
 
-Under-construction site for the Morjan family domains, hosted on Cloudflare Pages.
+Monorepo for Morjan family sites on Cloudflare Pages.  
+Each app under `apps/` is independent (own Pages project + custom domain).
 
-## Hostnames
+## Apps
 
-- `morjan.family`
-- `www.morjan.family`
-- `helen.morjan.family`
-- `harald.morjan.family`
-- `katy.morjan.family`
-- `arianna.morjan.family`
-- `trips.morjan.family`
+| Folder | Theme | Domain(s) |
+| --- | --- | --- |
+| `apps/hub` | Family hub | `morjan.family`, `www.morjan.family` |
+| `apps/arianna` | Pink + QR codes (age 5) | `arianna.morjan.family` |
+| `apps/helen` | Violet mechatronics student | `helen.morjan.family` |
+| `apps/harald` | Green software developer | `harald.morjan.family` |
+| `apps/katy` | Proud tech mom (warm coral) | `katy.morjan.family` |
+| `apps/trips` | Trip log (places + photos) | `trips.morjan.family` |
 
 ## Local preview
 
-Open `index.html` in a browser, or serve the folder:
-
 ```bash
-npx --yes serve .
+npx --yes serve apps/arianna
 ```
 
-## Deploy to Cloudflare Pages
+## Trips content
 
-1. Push this repo to GitHub (or upload the folder in Pages).
-2. Cloudflare → **Workers & Pages** → **Create** → **Pages** → connect the repo (or **Upload assets**).
-3. Build settings for this static site:
-   - Framework preset: **None**
-   - Build command: *(empty)*
-   - Build output directory: `/` (or leave default for root)
-4. After the first deploy, open the project → **Custom domains** → add each hostname above.
-5. Cloudflare will create/update DNS records in the `morjan.family` zone automatically.
-6. SSL stays on the Free plan (Full / Full strict).
+1. Edit `apps/trips/data.js`
+2. Add photos under `apps/trips/img/`
+3. Set each trip `cover` to `img/your-photo.jpg`
 
-## Notes
+## Cloudflare Pages (one project per app)
 
-- One Pages project can serve all six hostnames for now.
-- Later, split apps (`expenseTracker`, `trips`, …) into their own Pages projects.
+Same GitHub repo for all. Per app:
+
+- Production branch: `main`
+- Framework: None
+- Build command: empty
+- **Root directory:** e.g. `apps/helen`
+- Custom domain: matching hostname
+
+Push to `main` auto-deploys connected projects.

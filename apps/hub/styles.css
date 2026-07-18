@@ -2,10 +2,10 @@
   --ink: #1a2b28;
   --ink-soft: #3d524e;
   --paper: #f4efe6;
-  --sand: #e7dcc8;
-  --pine: #2f5d52;
-  --pine-deep: #1e3f38;
+  --accent: #2f5d52;
+  --accent-deep: #1e3f38;
   --glow: rgba(47, 93, 82, 0.18);
+  --grad-end: #dfe8e4;
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
 }
@@ -37,7 +37,7 @@ body {
   background:
     radial-gradient(ellipse 80% 55% at 15% 20%, var(--glow), transparent 55%),
     radial-gradient(ellipse 70% 50% at 85% 75%, rgba(231, 220, 200, 0.9), transparent 50%),
-    linear-gradient(160deg, #f7f2e9 0%, #e9e4d8 45%, #dfe8e4 100%);
+    linear-gradient(160deg, #f7f2e9 0%, #e9e4d8 45%, var(--grad-end) 100%);
   animation: drift 18s ease-in-out infinite alternate;
 }
 
@@ -68,7 +68,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--pine);
+  color: var(--accent);
   opacity: 0;
   transform: translateY(12px);
   animation: rise 0.8s ease forwards 0.15s;
@@ -81,7 +81,7 @@ body {
   font-weight: 700;
   line-height: 0.92;
   letter-spacing: -0.03em;
-  color: var(--pine-deep);
+  color: var(--accent-deep);
   opacity: 0;
   transform: translateY(18px);
   animation: rise 0.9s ease forwards 0.3s;
@@ -101,7 +101,7 @@ body {
 .host {
   margin: 1.75rem 0 0;
   font-size: 0.95rem;
-  color: var(--pine);
+  color: var(--accent);
   opacity: 0;
   transform: translateY(10px);
   animation: rise 0.9s ease forwards 0.7s;

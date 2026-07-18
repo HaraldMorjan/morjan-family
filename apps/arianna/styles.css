@@ -1,0 +1,147 @@
+:root {
+  --ink: #5a1640;
+  --ink-soft: #8a3a68;
+  --paper: #fff0f7;
+  --pink: #ff4fa3;
+  --pink-deep: #d91f7a;
+  --pink-soft: #ffb3d9;
+  --card: #ffffff;
+  --font-display: "Baloo 2", "Comic Sans MS", cursive;
+  --font-body: "Nunito", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background: var(--paper);
+  overflow-x: hidden;
+}
+
+.dots {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 12% 18%, var(--pink-soft), transparent 28%),
+    radial-gradient(circle at 88% 72%, #ffd6ec, transparent 32%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 22px,
+      rgba(255, 79, 163, 0.06) 22px,
+      rgba(255, 79, 163, 0.06) 23px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 22px,
+      rgba(255, 79, 163, 0.06) 22px,
+      rgba(255, 79, 163, 0.06) 23px
+    ),
+    linear-gradient(165deg, #fff7fb 0%, #ffe3f1 55%, #ffd0e8 100%);
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(1.75rem, 5vw, 4rem);
+  max-width: 40rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  font-size: 0.95rem;
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 12vw, 5.8rem);
+  font-weight: 800;
+  line-height: 0.95;
+  color: var(--pink-deep);
+}
+
+.lead {
+  margin: 1rem 0 0;
+  max-width: 28rem;
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.qr-card {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.25rem 1rem;
+  background: var(--card);
+  border: 4px solid var(--pink);
+  border-radius: 1.25rem;
+  box-shadow: 8px 8px 0 var(--pink-soft);
+  text-align: center;
+  animation: pop 0.7s ease both;
+}
+
+.qrcode {
+  display: inline-flex;
+  padding: 0.5rem;
+  background: #fff;
+}
+
+.qrcode img,
+.qrcode canvas {
+  display: block;
+  width: 180px !important;
+  height: 180px !important;
+}
+
+.qr-caption {
+  margin: 0.75rem 0 0;
+  font-weight: 700;
+  color: var(--pink-deep);
+  font-size: 0.95rem;
+}
+
+.host {
+  margin: 1.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--pink);
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qr-card {
+    animation: none;
+  }
+}

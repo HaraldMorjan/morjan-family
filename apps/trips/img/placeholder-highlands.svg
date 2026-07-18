@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Highlands placeholder">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky)"/>
+  <path d="M0 340 L160 220 L280 300 L420 180 L560 290 L700 200 L800 310 L800 500 L0 500 Z" fill="#0f766e"/>
+  <path d="M0 390 L200 300 L340 360 L500 280 L650 350 L800 300 L800 500 L0 500 Z" fill="#115e59"/>
+  <circle cx="640" cy="110" r="42" fill="#fde68a"/>
+  <text x="40" y="60" fill="#0f172a" font-family="Georgia, serif" font-size="28">Highlands</text>
+</svg>
