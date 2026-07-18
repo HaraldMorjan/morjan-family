@@ -6,3 +6,6 @@ node_modules/
 .wrangler/
 dist/
 *.log
+.dev.vars
+*.pem
+client_secret*.json

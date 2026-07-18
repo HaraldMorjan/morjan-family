@@ -1,7 +1,33 @@
 # Trips: phone upload plan (Drive + R2 + gallery)
 
-Status: **planned — implement later**  
-Goal: From a phone, upload a photo to a trip → keep full-res in Google Drive → create a web copy on Cloudflare R2 → show it in that trip’s gallery.
+> This is **feature #1 "Trip photos cycle and flow"** from [`roadmap.md`](roadmap.md).
+
+Status: **defined — v1 decisions locked 2026-07**
+
+## The real problem (why this exists)
+
+Family phones fill up on road trips, so **they can't take more photos**. The need is a
+**very easy** way for *anyone in the family* to move photos **off** the phone **without ever
+losing them**, then see any trip's photos effortlessly later (living room, or a tap on an
+NFC souvenir). It is a **safe-offload + easy-show** problem, not just an upload feature.
+
+Goal: From a phone, send selected photos to a trip → keep full-res in Google Drive →
+create a light web copy on Cloudflare R2 → show it in that trip's gallery → free phone
+space safely.
+
+## Locked decisions (v1)
+
+| Decision | Choice | Rationale |
+| --- | --- | --- |
+| **Delivery** | **iOS Shortcut** (+ Android share target) — no App Store | Install once via iCloud link; works on every family phone; we own the pipeline. A native/TestFlight app is rejected for v1 (cost, 90-day rebuilds, maintenance). |
+| **Free space** | Shortcut **moves uploaded photos into a "Backed up — safe to delete" album** (does *not* auto-delete) | Nothing is deleted by surprise; family bulk-deletes the album once they've seen photos in the gallery. |
+| **Auth (v1)** | **Shared secret baked into the family Shortcut** (`X-Upload-Token` header) | Only people with the Shortcut can upload. Full Auth (feature #3, Cloudflare Access) upgrades this later. |
+| **Backup layer** | Google Drive original (`morjan.family.media@gmail.com`, root folder `media`, per-trip `media/<trip-id>/`) + R2 web copy | Drive = never-lose original; R2 = light gallery copy. |
+| **Show later** | Per-trip gallery + NFC souvenir tags (`trips.morjan.family/<trip>`) | NFC depends on per-trip pages (feature #2), added then. |
+
+> Deletion order is a hard rule: **confirm the Drive original exists → then** the Shortcut
+> moves photos to the "safe to delete" album. The web copy (R2) can be retried; the original
+> must be safe before any photo is flagged for deletion.
 
 Related today:
 
@@ -27,45 +53,53 @@ Related today:
 ## Recommended architecture
 
 ```text
-Phone (trips.morjan.family)
-        │  HTTPS + auth cookie/JWT
+Phone photo picker → Share sheet → "Add to Morjan Trips" Shortcut
+        │  HTTPS POST multipart/form-data + X-Upload-Token
         ▼
-Upload API (Cloudflare Worker)     e.g. api.morjan.family/trips/...
+Upload API (Cloudflare Worker)     api.morjan.family/trips/:tripId/photos
         │
-        ├─► Google Drive  (original, full resolution)
+        ├─► Google Drive  (original, full resolution)   ← confirm FIRST
         ├─► Sharp/Image resize (Worker or queue step)
         ├─► R2 morjan-trips  (web copy)
-        └─► Catalog store (D1 or KV/R2 JSON) → gallery reads this
+        └─► Catalog store (D1) → gallery reads this
+                │
+                ▼  on success
+Shortcut moves those photos → "Backed up — safe to delete" album
 ```
 
 | Piece | Choice | Notes |
 | --- | --- | --- |
-| Site | Existing Pages app `apps/trips` | Add Upload button + picker (`capture="environment"` on mobile) |
-| API | Cloudflare Worker on `api.morjan.family` | Fits current CF stack; keep secrets off the static site |
-| Originals backup | Google Drive (Shared Drive or family folder) | Folder per `trip-id` |
-| Web delivery | R2 bucket `morjan-trips` + `media.morjan.family` | Resized JPEG/WebP |
-| Catalog | Cloudflare D1 (preferred) or R2 JSON manifest | Source of truth for gallery URLs |
-| Auth | Cloudflare Access (email allowlist) **or** simple shared PIN + HttpOnly session | Access is fastest “family only” |
+| Delivery | **iOS Shortcut** (Share Sheet → receives Images → `POST` multipart) + Android share target | Install once via iCloud link; no App Store. Confirmed viable via `Get Contents of URL` + `Repeat with Each`. |
+| Site | Existing Pages app `apps/trips` | Optional secondary in-page upload button later (`capture="environment"`); Shortcut is primary for v1. |
+| API | Cloudflare Worker on `api.morjan.family` | Fits current CF stack; keep secrets off the static site. |
+| Originals backup | Google Drive (Shared Drive or family folder) | Folder per `trip-id`. |
+| Web delivery | R2 bucket `morjan-trips` + `media.morjan.family` | Resized JPEG/WebP. |
+| Catalog | Cloudflare D1 | Source of truth for gallery URLs. |
+| Auth (v1) | **Shared secret** `X-Upload-Token` validated by the Worker | Only holders of the family Shortcut can upload. Cloudflare Access = feature #3 upgrade. |
+| Show / discovery | Per-trip gallery + **NFC souvenir tags** → `trips.morjan.family/<trip>` | NFC depends on per-trip pages (feature #2). |
 
 Aligns with hosting pattern: **one subdomain = one product** — API on `api.morjan.family`, media on `media.morjan.family`, UI on `trips.morjan.family`.
 
 ---
 
-## User experience
+## User experience (Shortcut flow)
 
-1. Open trip on `trips.morjan.family` (signed in).
-2. Tap **Add photo**.
-3. Camera roll / camera opens.
-4. Progress: “Saving original… / Creating web copy… / Done”.
-5. New photo appears in that trip’s gallery immediately (no deploy).
-6. Optional: show “Saved to Drive” confirmation.
+1. In Photos, select the trip photos → tap **Share**.
+2. Tap **Add to Morjan Trips** (the installed Shortcut).
+3. Shortcut asks **which trip** (list pulled from the API, or a quick menu).
+4. Uploads each photo → progress "Backing up… / Web copy… / Done".
+5. New photos appear in that trip's gallery immediately (no deploy).
+6. On success, Shortcut **moves those photos into the "Backed up — safe to delete" album**.
+7. Later, family reviews that album and bulk-deletes to free space — with confidence.
+8. To show off: open `trips.morjan.family/<trip>` or **tap the NFC souvenir** for that trip.
 
 Constraints:
 
 - Max file size (e.g. 25 MB original)
 - Allowed types: JPEG, PNG, HEIC (convert HEIC → JPEG server-side)
-- Rate limit per user/IP
+- Rate limit per token/IP
 - Spend / storage caps in Worker config
+- Shortcut only moves to the "safe to delete" album **after** the API confirms success
 
 ---
 
@@ -124,40 +158,97 @@ Failure policy:
 - If Drive succeeds and R2 fails → retry R2; do not claim success until web copy exists (gallery needs R2).
 - If R2 succeeds and Drive fails → keep R2 photo, flag `drive_pending` for retry job (original safety net).
 - Prefer: **Drive first**, then web copy, so backup exists even if resize fails (store original temporarily in R2 `inbox/` only if needed).
+- The Shortcut moves photos to the "safe to delete" album **only** on a `200` that confirms the Drive original is stored — never on a partial/failed upload.
 
 ---
 
 ## Google Drive setup (later checklist)
 
-1. Google Cloud project → enable Drive API.
-2. Service account **or** single-user OAuth (family Drive owned by Harald/Katy).
-3. Shared folder “Morjan Trips” shared with the service account (Editor).
-4. Store secrets in Worker:
-   - `GOOGLE_SERVICE_ACCOUNT_JSON` or `GOOGLE_REFRESH_TOKEN` + client id/secret
-   - `GOOGLE_DRIVE_ROOT_FOLDER_ID`
-5. Create subfolder per `trip-id` on first upload if missing.
+Dedicated Drive account (originals live here — see backup strategy):
+
+| Item | Value |
+| --- | --- |
+| Drive account | `morjan.family.media@gmail.com` |
+| Root folder | `media` |
+| Per-trip layout | `media/<trip-id>/` (e.g. `media/guatemala-highlands-2024/`) |
+
+**Auth method (locked): OAuth 2.0 refresh token — NOT a service account.**
+Since 15 Apr 2025 new service accounts have no storage quota and cannot own files in a
+consumer (Gmail) My Drive → `403 storageQuotaExceeded`. Service accounts only work with
+Shared Drives (Google Workspace). `morjan.family.media@gmail.com` is a consumer account,
+so the Worker authenticates as that user via a long-lived refresh token, using the
+account's own 15 GB / Google One quota.
+
+Checklist (one-time, signed in as `morjan.family.media@gmail.com`):
+
+1. Google Cloud project (e.g. `morjan-media`) → enable **Google Drive API**.
+2. **OAuth consent screen** → User type **External**; app + support email = the media account.
+   - Scope: `https://www.googleapis.com/auth/drive.file` (non-sensitive → no Google verification).
+   - **Publish app to "In production"** — Testing mode expires refresh tokens after 7 days.
+3. **Credentials → OAuth client ID → Web application**; add redirect
+   `https://developers.google.com/oauthplayground`. Save **Client ID + Secret**.
+4. Mint the **refresh token once** via the OAuth Playground (own credentials, `access_type=offline`,
+   `prompt=consent`, scope `drive.file`), authorized as the media account.
+5. Store Worker secrets:
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REFRESH_TOKEN`
+   - `GOOGLE_DRIVE_ROOT_FOLDER_ID` (see note)
+6. Root folder: with `drive.file` the Worker can only touch folders **it** created, so the
+   Worker **creates the `media` root folder on first run** and persists its ID (do not reuse a
+   hand-made folder). It then creates `media/<trip-id>/` subfolders as needed.
+   - Alternative to reuse a manually-created `media` folder: use the full `drive` scope
+     (sensitive → unverified-app warning, fine for a single owner). `drive.file` is preferred.
+
+Runtime: exchange the refresh token for an access token at
+`https://oauth2.googleapis.com/token`; cache it ~55 min.
 
 ---
 
-## Auth options (pick one when implementing)
+## Auth
+
+**v1 (locked): shared secret token.** The family Shortcut sends `X-Upload-Token: <secret>`;
+the Worker rejects anything without the matching secret (stored as a Worker secret). Only
+people who installed the Shortcut can upload. Simple, no login UI, good enough for a
+family-only write endpoint that isn't publicly advertised.
+
+- Rotate by pushing an updated Shortcut + swapping the Worker secret.
+- Rate-limit per token/IP; keep CORS locked to the trips origin.
+
+**Upgrade path (feature #3, later):** replace/wrap the token with **Cloudflare Access**
+(email allowlist) for real per-person identity across all family subdomains. Options kept
+for that decision:
 
 | Option | Pros | Cons |
 | --- | --- | --- |
-| **A. Cloudflare Access** (allowlisted emails) | Fast, no custom login UI | Needs Zero Trust setup |
-| **B. Family PIN / password** → Worker session cookie | Simple UX | Must hash, rate-limit, rotate |
-| **C. Magic link email** | Nice UX | More moving parts |
-
-Recommendation: **A** for private family use; add Upload UI only when Access session present (or separate `upload.trips…` protected route).
+| **Cloudflare Access** (allowlisted emails) | No custom login UI, central SSO feel | Needs Zero Trust setup |
+| Family PIN → Worker session cookie | Simple UX | Must hash, rate-limit, rotate |
+| Magic link email | Nice per-person UX | More moving parts |
 
 ---
 
-## Frontend changes (`apps/trips`)
+## The Shortcut (primary delivery)
+
+1. **Receive** Share Sheet input → type **Images**, allow multiple.
+2. **Ask which trip** — menu, or `GET api.morjan.family/trips` for a live list.
+3. **Repeat with Each** photo → **Get Contents of URL**:
+   - `POST https://api.morjan.family/trips/<tripId>/photos`
+   - Request Body: **Form**; file field = the repeated item.
+   - Headers: `X-Upload-Token: <family secret>`, `Content-Type: multipart/form-data`.
+4. **On success** → **Add to Album** "Backed up — safe to delete" (does not delete).
+5. Show a final "Done — N photos backed up" notification.
+6. Distribute via a single **iCloud share link**; each family member installs once and
+   pastes the shared token (or it's baked into the shared copy).
+
+> Enable *Settings → Shortcuts → Advanced → Allow Sharing Large Amounts of Data* for big batches.
+> Keep the screen on during large transfers.
+
+## Frontend changes (`apps/trips`, secondary/optional)
 
 1. Load trips/photos from API (fallback to `data.js` while migrating).
-2. Per trip: **Add photo** button (hidden if logged out).
-3. `<input type="file" accept="image/*" capture="environment">` + multi-select later if desired.
-4. Upload with `fetch` + progress; on success, push into lightbox thumb list.
-5. Keep existing lightbox (prev/next/thumbs).
+2. Optional in-page **Add photo** button for desktop (`<input type="file" accept="image/*">`).
+3. Per-trip pages + **NFC-friendly URLs** (`/<trip>`) — shared with feature #2.
+4. Keep existing lightbox (prev/next/thumbs); append new photos on upload success.
 
 ---
 
@@ -181,13 +272,17 @@ Recommendation: **A** for private family use; add Upload UI only when Access ses
 - [ ] Run `bash scripts/setup-media-r2.sh`
 - [ ] Manual uploads via `upload-trip-photos.sh` until phone upload ships
 
-### Phase 1 — API + catalog (no Drive yet)
-- [ ] Worker project `api` (or `apps/api`) on `api.morjan.family`
-- [ ] D1 schema + migrations
-- [ ] `GET` trips/photos
+### Phase 1 — API + catalog + Shortcut (no Drive yet)
+- [x] Worker project scaffold (`apps/api`, Worker name `morjan-api`)
+- [x] D1 schema migration file (`apps/api/migrations/0001_init.sql`)
+- [x] `GET` trips/photos + `GET /health` (wired; needs D1 create + deploy)
+- [x] Shared-secret `X-Upload-Token` check on `POST` (returns 501 until upload pipeline)
+- [ ] Create D1 `morjan-catalog`, paste `database_id`, migrate, deploy
+- [ ] Put secrets with correct names on `morjan-api` (see `apps/api/README.md`)
+- [ ] Custom domain `api.morjan.family`
 - [ ] `POST` photo → resize → R2 → D1 only
-- [ ] Trips UI reads API + upload button
-- [ ] Auth (Access or PIN)
+- [ ] Build the **iOS Shortcut** (share sheet → upload → move to "safe to delete" album)
+- [ ] Trips UI reads API
 
 ### Phase 2 — Google Drive originals
 - [ ] Drive credentials + root folder

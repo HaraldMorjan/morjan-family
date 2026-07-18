@@ -13,6 +13,7 @@ Each app under `apps/` is independent (own Pages project + custom domain).
 | `apps/harald` | Green software developer | `harald.morjan.family` |
 | `apps/katy` | Proud tech mom (warm coral) | `katy.morjan.family` |
 | `apps/trips` | Trip log (places + photos) | `trips.morjan.family` |
+| `apps/api` | Upload API + trip catalog (Worker) | `api.morjan.family` |
 
 ## Local preview
 
@@ -60,7 +61,10 @@ Tiny placeholders may stay in `apps/trips/img/`. Real albums go to R2.
 
 Click a trip card (or **View gallery**) to open the lightbox.
 
-**Later:** phone upload → Google Drive (original) + R2 (web) + gallery — see [`docs/trips-phone-upload-plan.md`](docs/trips-phone-upload-plan.md).
+**Later:** phone upload → Google Drive (original) + R2 (web) + gallery — see [`docs/trips-phone-upload-plan.md`](docs/trips-phone-upload-plan.md).  
+API Worker scaffold: [`apps/api/README.md`](apps/api/README.md).
+
+**Vision & roadmap:** where the family universe is headed (hub, trips, auth, new products) — see [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Cloudflare Pages (one project per app)
 
