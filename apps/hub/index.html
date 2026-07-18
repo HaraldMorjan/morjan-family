@@ -3,29 +3,97 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Morjan family hub — under construction." />
+    <meta name="description" content="Morjan family hub — a living constellation, under construction." />
     <title>Family hub · Morjan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Source+Sans+3:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
-    <div class="atmosphere" aria-hidden="true"></div>
+  <body class="theme-night">
+    <div class="sky" aria-hidden="true"></div>
+    <div class="milky-way" aria-hidden="true"></div>
+    <div class="starfield" aria-hidden="true"></div>
+    <div class="shooting-sky" id="shootingSky" aria-hidden="true"></div>
+
     <main class="stage">
-      <p class="eyebrow">Family hub</p>
-      <h1 class="brand">Morjan</h1>
-      <p class="lead">The Morjan family home on the web — pick a space to visit.</p>
-      <nav class="members" aria-label="Family members">
-        <a class="member member-helen" href="https://helen.morjan.family" target="_blank" rel="noopener noreferrer">Helen</a>
-        <a class="member member-harald" href="https://harald.morjan.family" target="_blank" rel="noopener noreferrer">Harald</a>
-        <a class="member member-katy" href="https://katy.morjan.family" target="_blank" rel="noopener noreferrer">Katy</a>
-        <a class="member member-arianna" href="https://arianna.morjan.family" target="_blank" rel="noopener noreferrer">Arianna</a>
-        <a class="member member-trips" href="https://trips.morjan.family" target="_blank" rel="noopener noreferrer">Trips</a>
-      </nav>
+      <p class="eyebrow">Under construction</p>
+
+      <div class="sky-switch" role="group" aria-label="Sky theme">
+        <button type="button" class="sky-option" id="skySunButton" aria-pressed="false">
+          Sun
+        </button>
+        <button type="button" class="sky-option" id="skyMoonButton" aria-pressed="true">
+          Moon
+        </button>
+        <button type="button" class="sky-option sky-option-auto" id="skyAutoButton" aria-pressed="true">
+          Auto
+        </button>
+      </div>
+
+      <section
+        class="constellation"
+        id="constellation"
+        aria-label="Morjan family constellation"
+      >
+        <div class="celestial" id="celestial" data-mode="moon">
+          <span class="celestial-glow" aria-hidden="true"></span>
+          <span class="celestial-disk" aria-hidden="true"></span>
+          <h1 class="brand">Morjan</h1>
+        </div>
+
+        <a
+          class="star star-harald"
+          href="https://harald.morjan.family"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Harald
+        </a>
+
+        <a
+          class="star star-katy"
+          href="https://katy.morjan.family"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Katy
+        </a>
+
+        <a
+          class="star star-helen"
+          href="https://helen.morjan.family"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Helen
+        </a>
+
+        <a
+          class="star star-arianna"
+          href="https://arianna.morjan.family"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Arianna
+        </a>
+
+        <a
+          class="star star-trips"
+          href="https://trips.morjan.family"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Trips
+        </a>
+      </section>
+
+      <p class="lead" id="leadText">
+        Our family in the night sky — tap a name to visit.
+      </p>
       <p class="host" id="hostLabel"></p>
     </main>
     <script src="./app.js"></script>
