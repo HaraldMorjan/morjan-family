@@ -1,0 +1,163 @@
+:root {
+  --ink: #5a1640;
+  --ink-soft: #8a3a68;
+  --pink: #ff4fa3;
+  --pink-deep: #d91f7a;
+  --pink-soft: #ffb3d9;
+  --font-display: "Baloo 2", "Comic Sans MS", cursive;
+  --font-body: "Nunito", "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 20% 20%, #ffd6ec, transparent 40%),
+    radial-gradient(circle at 80% 70%, #ffb3d9, transparent 38%),
+    linear-gradient(160deg, #fff7fb 0%, #ffe3f1 50%, #ffcce6 100%);
+  overflow: hidden;
+}
+
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(1.75rem, 5vw, 4rem);
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  font-size: 0.95rem;
+  animation: rise 0.7s ease both;
+}
+
+.brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.6rem, 14vw, 6.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  color: var(--pink-deep);
+  animation: pop 0.85s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.lead {
+  margin: 1rem 0 0;
+  max-width: 26rem;
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  line-height: 1.45;
+  color: var(--ink-soft);
+  animation: rise 0.8s ease both 0.15s;
+}
+
+.burst-button {
+  margin-top: 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.6rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-deep) 100%);
+  box-shadow: 0 10px 0 #b01566;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  animation: rise 0.8s ease both 0.28s;
+}
+
+.burst-button:hover,
+.burst-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 0 #b01566;
+  outline: none;
+}
+
+.burst-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #b01566;
+}
+
+.back-link {
+  margin-top: 1.25rem;
+  font-weight: 700;
+  color: var(--pink-deep);
+  text-decoration: none;
+  border-bottom: 2px solid var(--pink-soft);
+  animation: rise 0.8s ease both 0.4s;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--pink);
+  outline: none;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7) rotate(-4deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow,
+  .brand,
+  .lead,
+  .burst-button,
+  .back-link {
+    animation: none;
+  }
+
+  .burst-button:hover,
+  .burst-button:focus-visible,
+  .burst-button:active {
+    transform: none;
+  }
+}

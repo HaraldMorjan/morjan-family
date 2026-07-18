@@ -34,6 +34,11 @@ body {
 .hero {
   padding: clamp(2.5rem, 7vw, 5rem) clamp(1.5rem, 5vw, 4rem) 1.5rem;
   max-width: 64rem;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .eyebrow {
@@ -43,6 +48,7 @@ body {
   text-transform: uppercase;
   font-size: 0.85rem;
   color: var(--ocean);
+  animation: rise 0.75s ease both;
 }
 
 .brand {
@@ -52,6 +58,7 @@ body {
   font-weight: 700;
   line-height: 0.95;
   color: var(--ocean-deep);
+  animation: rise 0.85s ease both 0.1s;
 }
 
 .lead {
@@ -60,11 +67,13 @@ body {
   font-size: clamp(1.1rem, 2.2vw, 1.35rem);
   line-height: 1.5;
   color: var(--ink-soft);
+  animation: rise 0.85s ease both 0.2s;
 }
 
 .content {
   padding: 0 clamp(1.5rem, 5vw, 4rem) 3rem;
   max-width: 64rem;
+  margin: 0 auto;
 }
 
 .toolbar {
@@ -187,4 +196,24 @@ body {
   padding: 1rem clamp(1.5rem, 5vw, 4rem) 2rem;
   color: var(--ocean);
   font-size: 0.9rem;
+  text-align: center;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow,
+  .brand,
+  .lead {
+    animation: none;
+  }
 }

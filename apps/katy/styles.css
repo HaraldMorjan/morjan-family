@@ -36,15 +36,20 @@ body {
     radial-gradient(ellipse 70% 55% at 15% 20%, rgba(232, 93, 76, 0.18), transparent 55%),
     radial-gradient(ellipse 60% 45% at 90% 70%, rgba(243, 196, 164, 0.55), transparent 50%),
     linear-gradient(155deg, #fff9f5 0%, #ffe8dc 48%, #ffd8c8 100%);
+  animation: drift 18s ease-in-out infinite alternate;
 }
 
 .stage {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
   padding: clamp(2rem, 6vw, 5rem);
   max-width: 48rem;
 }
@@ -56,6 +61,7 @@ body {
   text-transform: uppercase;
   font-size: 0.85rem;
   color: var(--coral);
+  animation: rise 0.75s ease both;
 }
 
 .brand {
@@ -66,6 +72,7 @@ body {
   line-height: 0.92;
   letter-spacing: -0.03em;
   color: var(--coral-deep);
+  animation: rise 0.85s ease both 0.1s;
 }
 
 .lead {
@@ -74,6 +81,7 @@ body {
   font-size: clamp(1.1rem, 2.3vw, 1.35rem);
   line-height: 1.5;
   color: var(--ink-soft);
+  animation: rise 0.85s ease both 0.2s;
 }
 
 .pillars {
@@ -81,6 +89,9 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   gap: 0.85rem;
   margin-top: 1.75rem;
+  width: min(100%, 40rem);
+  text-align: left;
+  animation: rise 0.85s ease both 0.35s;
 }
 
 .pillars article {
@@ -108,4 +119,36 @@ body {
   margin: 1.5rem 0 0;
   font-size: 0.95rem;
   color: var(--coral);
+  animation: rise 0.85s ease both 0.5s;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03) translate3d(-1%, 1%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .eyebrow,
+  .brand,
+  .lead,
+  .pillars,
+  .host {
+    animation: none;
+  }
 }

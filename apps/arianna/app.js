@@ -10,7 +10,7 @@
     return;
   }
 
-  const qrTarget = "https://arianna.morjan.family";
+  const qrTarget = `${window.location.origin}/confetti.html`;
 
   qrHost.innerHTML = "";
   new QRCode(qrHost, {
