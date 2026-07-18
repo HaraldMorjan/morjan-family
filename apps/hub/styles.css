@@ -59,7 +59,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   padding: clamp(2rem, 6vw, 5rem);
-  max-width: 42rem;
+  max-width: 48rem;
 }
 
 .eyebrow {
@@ -98,13 +98,65 @@ body {
   animation: rise 0.9s ease forwards 0.5s;
 }
 
+.members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.75rem;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise 0.9s ease forwards 0.65s;
+}
+
+.member {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 6.5rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.member:hover,
+.member:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(26, 43, 40, 0.16);
+  outline: none;
+}
+
+.member-helen {
+  background: #7c3aed;
+}
+
+.member-harald {
+  background: #16a34a;
+}
+
+.member-katy {
+  background: #e85d4c;
+}
+
+.member-arianna {
+  background: #ff4fa3;
+}
+
+.member-trips {
+  background: #0e7490;
+}
+
 .host {
   margin: 1.75rem 0 0;
   font-size: 0.95rem;
   color: var(--accent);
   opacity: 0;
   transform: translateY(10px);
-  animation: rise 0.9s ease forwards 0.7s;
+  animation: rise 0.9s ease forwards 0.8s;
 }
 
 @keyframes rise {
@@ -128,9 +180,15 @@ body {
   .eyebrow,
   .brand,
   .lead,
+  .members,
   .host {
     animation: none;
     opacity: 1;
+    transform: none;
+  }
+
+  .member:hover,
+  .member:focus-visible {
     transform: none;
   }
 }
