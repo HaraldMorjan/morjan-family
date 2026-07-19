@@ -12,6 +12,11 @@ name = "morjan-api"
 main = "src/index.js"
 compatibility_date = "2026-07-17"
 
+# Custom domain (zone morjan.family). Deploy creates the domain + DNS automatically.
+[[routes]]
+pattern = "api.morjan.family"
+custom_domain = true
+
 [[d1_databases]]
 binding = "DB"
 database_name = "morjan-catalog"

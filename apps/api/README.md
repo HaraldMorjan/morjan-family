@@ -57,8 +57,16 @@ npx wrangler secret put UPLOAD_TOKEN
 
 ## Custom domain
 
-Cloudflare Dashboard → Workers & Pages → `morjan-api` → Settings → Domains →  
-add `api.morjan.family` (zone `morjan.family`).
+Declared in `wrangler.toml` as a `custom_domain` route, so a deploy attaches it and
+creates the DNS record automatically:
+
+```bash
+cd apps/api
+npx wrangler deploy
+```
+
+(Manual alternative: Dashboard → Workers & Pages → `morjan-api` → Settings → Domains →
+add `api.morjan.family` in zone `morjan.family`.)
 
 ## Smoke test
 
