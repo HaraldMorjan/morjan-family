@@ -2,9 +2,10 @@
  * morjan-api — trips upload + catalog Worker
  * Domain: api.morjan.family
  *
- * Phase 1 scaffold: health, list trips/photos, token-gated POST stub.
- * Upload pipeline (resize → R2 → D1, then Drive) lands next.
+ * Pipeline: multipart POST → Drive original → resize → R2 → D1
  */
+
+import { handlePhotoUpload } from "./upload.js";
 
 const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8"
@@ -112,7 +113,7 @@ const handleRequest = async (request, environment) => {
       {
         ok: true,
         service: "morjan-api",
-        phase: "scaffold"
+        phase: "upload-pipeline"
       },
       environment
     );
@@ -154,15 +155,14 @@ const handleRequest = async (request, environment) => {
         return tokenCheck.response;
       }
 
-      // Phase 1 next: multipart parse → resize → R2 → D1
-      // Phase 2: Google Drive original first (GOOGLE_* secrets)
+      const uploadResult = await handlePhotoUpload(
+        request,
+        environment,
+        tripId
+      );
       return jsonResponse(
-        501,
-        {
-          error: "Upload pipeline not implemented yet.",
-          tripId,
-          next: "Wire multipart POST → R2 web copy → D1, then Drive originals."
-        },
+        uploadResult.statusCode,
+        uploadResult.payload,
         environment
       );
     }

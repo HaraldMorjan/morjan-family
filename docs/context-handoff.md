@@ -16,7 +16,7 @@ Apps under `apps/`, each its own Pages project + subdomain. API is a Cloudflare 
   - D1 `morjan-catalog` created + migrated (`database_id = 43da9c01-39be-4f6b-a6d7-bd22589a3133`)
   - R2 binding `MEDIA` → `morjan-trips`
   - Routes live: `GET /health`, `GET /trips`, `GET /trips/:id/photos`
-  - `POST /trips/:id/photos` → checks `X-Upload-Token`, returns **501** (pipeline not wired yet)
+  - `POST /trips/:id/photos` → token + multipart → Drive original → resize (Images) → R2 → D1 → `{ mediaUrl, photoId, driveConfirmed }`
 
 ## Source-of-truth docs (read these first)
 - `docs/roadmap.md` — vision + agreed feature order
@@ -25,7 +25,7 @@ Apps under `apps/`, each its own Pages project + subdomain. API is a Cloudflare 
 - `docs/context-handoff.md` — this file
 
 ## Agreed feature order (priority)
-1. Trip photos cycle and flow  ← IN PROGRESS (scaffold + Drive OAuth proven, domain attached)
+1. Trip photos cycle and flow  ← IN PROGRESS (pipeline + D1 seed live; Shortcut next)
 2. Trips (per-trip pages, map, story mode, tagging)
 3. Auth (family-only; Cloudflare Access is the target upgrade)
 4. New feature (owner will ask for suggestions when we get there)
@@ -66,20 +66,21 @@ All four put successfully on Worker `morjan-api`:
 Earlier mistaken `secret put` (Client ID used as secret *name*) — ignore; correct names were re-put after deploy.
 
 ## Repo scaffolding added
-- `apps/api/wrangler.toml` — Worker `morjan-api`, D1 + R2 bindings, `api.morjan.family` custom-domain route
-- `apps/api/src/index.js` — health/list routes + token-gated POST stub (501)
+- `apps/api/wrangler.toml` — Worker `morjan-api`, D1 + R2 + Images bindings, `api.morjan.family` custom-domain route
+- `apps/api/src/index.js` — health/list routes + token-gated POST
+- `apps/api/src/upload.js` — multipart → Drive → resize → R2 → D1 pipeline
+- `apps/api/src/drive.js` — OAuth refresh + `media/<trip-id>/` folders + resumable upload
+- `apps/api/src/resize.js` — Images binding web copy (fallback to original)
 - `apps/api/migrations/0001_init.sql` — `trips` + `trip_photos`
+- `apps/api/seeds/trips.sql` — re-runnable trip metadata seed (from `data.js`)
+- `apps/api/scripts/seed-trips.sh` — apply seed to local/remote D1
 - `apps/api/scripts/test-drive-upload.mjs` — one-shot Drive connectivity test
 - `apps/api/README.md` — setup docs
 
 ## Next build steps (in order)
 1. ~~Attach custom domain `api.morjan.family` to Worker `morjan-api`~~ ✅ DONE (2026-07-18)
-2. Wire `POST /trips/:tripId/photos`:
-   - validate `X-Upload-Token` + multipart
-   - Drive original first (confirm success)
-   - resize → R2 web copy → D1 row
-   - return `{ mediaUrl, photoId }`
-3. Seed trips into D1 (or sync from `apps/trips/data.js`)
+2. ~~Wire `POST /trips/:tripId/photos`~~ ✅ DONE (2026-07-18) — auto-creates minimal trip row if missing
+3. ~~Seed trips into D1~~ ✅ DONE (2026-07-18) — `apps/api/seeds/trips.sql` + `bash scripts/seed-trips.sh --remote` (re-runnable upsert; mirrors `data.js` metadata only)
 4. Build iOS Shortcut (share sheet → POST → move to "Backed up — safe to delete" album)
 5. Point trips UI at API (fallback to `data.js` during transition)
 6. Phase 2 polish already partially ready (Drive secrets exist)

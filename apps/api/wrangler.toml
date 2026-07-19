@@ -27,6 +27,10 @@ database_id = "43da9c01-39be-4f6b-a6d7-bd22589a3133"
 binding = "MEDIA"
 bucket_name = "morjan-trips"
 
+# Resize/compress web copies (max edge 2048, JPEG q80). Billed as Images transformations.
+[images]
+binding = "IMAGES"
+
 [vars]
 MEDIA_PUBLIC_BASE = "https://media.morjan.family"
 ALLOWED_ORIGIN = "https://trips.morjan.family"
