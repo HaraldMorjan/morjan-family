@@ -11,6 +11,8 @@ const JSON_HEADERS = {
   "content-type": "application/json; charset=utf-8"
 };
 
+export const canonicalizeTripId = (tripId) => tripId.toLowerCase();
+
 const corsHeadersFor = (environment) => ({
   "access-control-allow-origin": environment.ALLOWED_ORIGIN || "*",
   "access-control-allow-methods": "GET, POST, OPTIONS",
@@ -134,7 +136,9 @@ const handleRequest = async (request, environment) => {
 
   const tripPhotosMatch = pathName.match(/^\/trips\/([^/]+)\/photos$/);
   if (tripPhotosMatch) {
-    const tripId = decodeURIComponent(tripPhotosMatch[1]);
+    const tripId = canonicalizeTripId(
+      decodeURIComponent(tripPhotosMatch[1])
+    );
 
     if (request.method === "GET") {
       try {
