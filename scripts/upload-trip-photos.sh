@@ -53,13 +53,27 @@ fi
 IFS=$'\n' photo_files=($(printf '%s\n' "${photo_files[@]}" | sort))
 unset IFS
 
+mime_type_for_file() {
+  case "${1##*.}" in
+    jpg|JPG|jpeg|JPEG) echo "image/jpeg" ;;
+    png|PNG) echo "image/png" ;;
+    webp|WEBP) echo "image/webp" ;;
+    gif|GIF) echo "image/gif" ;;
+    svg|SVG) echo "image/svg+xml" ;;
+  esac
+}
+
 echo "==> Uploading ${#photo_files[@]} file(s) to ${BUCKET_NAME}/${TRIP_ID}/"
 
 for photo_path in "${photo_files[@]}"; do
   file_name="$(basename "${photo_path}")"
   object_key="${BUCKET_NAME}/${TRIP_ID}/${file_name}"
+  content_type="$(mime_type_for_file "${file_name}")"
   echo "  → ${object_key}"
-  npx --yes wrangler r2 object put "${object_key}" --file="${photo_path}" --remote
+  npx --yes wrangler r2 object put "${object_key}" \
+    --file="${photo_path}" \
+    --content-type="${content_type}" \
+    --remote
   uploaded_names+=("${file_name}")
 done
 

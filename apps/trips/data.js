@@ -25,15 +25,12 @@ window.MORJAN_TRIPS = [
     place: "Antigua & Lake Atitlán, Guatemala",
     dates: "2024",
     blurb: "Volcano views, markets, and slow mornings by the lake.",
-    cover: morjanMediaUrl(
-      "guatemala-highlands-2024",
-      "placeholder-highlands.svg"
-    ),
-    photos: morjanTripPhotos("guatemala-highlands-2024", [
-      "placeholder-highlands.svg",
-      "placeholder-beach.svg",
-      "placeholder-city.svg"
-    ]),
+    cover: "img/placeholder-highlands.svg",
+    photos: [
+      "img/placeholder-highlands.svg",
+      "img/placeholder-beach.svg",
+      "img/placeholder-city.svg"
+    ],
     tags: ["family", "nature"]
   },
   {
