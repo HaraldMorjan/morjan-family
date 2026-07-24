@@ -313,6 +313,18 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   }
 
   const webCopy = await createWebCopy(environment, originalBytes, contentType);
+  if (!webCopy.resized) {
+    return {
+      statusCode: 502,
+      payload: {
+        error:
+          "Drive original saved, but web copy conversion failed. Photo was not published; retry upload.",
+        driveFileId,
+        detail: webCopy.note
+      }
+    };
+  }
+
   const r2Key = `${tripId}/${stamp}-${photoId}.${webCopy.extension}`;
   const mediaBase = (
     environment.MEDIA_PUBLIC_BASE || "https://media.morjan.family"
