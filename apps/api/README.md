@@ -108,7 +108,7 @@ Pipeline order (locked):
 1. Validate token + trip id + type + size (max 25 MB)
 2. Auto-create a minimal D1 `trips` row if missing (titles seeded later)
 3. Upload **original** to Google Drive `media/<trip-id>/` (must succeed)
-4. Resize via Images binding (max edge 2048, JPEG q80) — falls back to original bytes if resize fails
+4. Resize via Images binding (max edge 2048, JPEG q80) — fail without publishing if resize fails
 5. Put web copy on R2 → `https://media.morjan.family/<trip-id>/...`
 6. Insert `trip_photos` row; set trip `cover_url` if empty
 7. Return `{ ok, photoId, mediaUrl, driveFileId, driveConfirmed, safeToMoveOffPhone }`
