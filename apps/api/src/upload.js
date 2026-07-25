@@ -1,9 +1,10 @@
 /**
  * POST /trips/:tripId/photos pipeline:
- * validate → Drive original → web copy → R2 → D1 → { mediaUrl, photoId }
+ * validate → Drive original (trips/<trip>/<album>/) → resize → R2 → D1
  */
 
 import {
+  ensureAlbumFolder,
   ensureTripFolder,
   getDriveAccessToken,
   uploadOriginalToDrive
@@ -11,6 +12,7 @@ import {
 import { createWebCopy } from "./resize.js";
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+const DEFAULT_ALBUM_NAME = "Unsorted";
 const ALLOWED_CONTENT_TYPES = new Set([
   "image/jpeg",
   "image/jpg",
@@ -20,8 +22,21 @@ const ALLOWED_CONTENT_TYPES = new Set([
   "image/heif"
 ]);
 
-const isValidTripId = (tripId) =>
+export const isValidTripId = (tripId) =>
   typeof tripId === "string" && /^[a-z0-9][a-z0-9-]{1,63}$/i.test(tripId);
+
+export const slugify = (name) => {
+  const slug = String(name || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 63);
+
+  return slug || "untitled";
+};
 
 const sanitizeFileBaseName = (fileName) => {
   const baseName = String(fileName || "photo")
@@ -79,28 +94,127 @@ const pickPhotoFile = (formData) => {
   return null;
 };
 
-const ensureTripRow = async (environment, tripId) => {
+const pickAlbumName = (formData) => {
+  const albumRaw = formData.get("album") || formData.get("albumName");
+  if (typeof albumRaw === "string" && albumRaw.trim()) {
+    return albumRaw.trim().slice(0, 80);
+  }
+  return DEFAULT_ALBUM_NAME;
+};
+
+export const ensureTripRow = async (environment, tripId, title = null) => {
   const existingTrip = await environment.DB.prepare(
-    "SELECT id FROM trips WHERE id = ?"
+    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
   )
     .bind(tripId)
     .first();
 
   if (existingTrip) {
-    return { created: false };
+    return {
+      created: false,
+      tripId: existingTrip.id,
+      title: existingTrip.title,
+      driveFolderId: existingTrip.driveFolderId || null
+    };
   }
 
   const createdAt = new Date().toISOString();
+  const tripTitle =
+    typeof title === "string" && title.trim() ? title.trim().slice(0, 120) : tripId;
+
   await environment.DB.prepare(
     `
-    INSERT INTO trips (id, title, place, dates, blurb, cover_url, created_at)
-    VALUES (?, ?, NULL, NULL, NULL, NULL, ?)
+    INSERT INTO trips (id, title, place, dates, blurb, cover_url, created_at, drive_folder_id)
+    VALUES (?, ?, NULL, NULL, NULL, NULL, ?, NULL)
     `
   )
-    .bind(tripId, tripId, createdAt)
+    .bind(tripId, tripTitle, createdAt)
     .run();
 
-  return { created: true };
+  return {
+    created: true,
+    tripId,
+    title: tripTitle,
+    driveFolderId: null
+  };
+};
+
+export const ensureAlbumRow = async (environment, tripId, albumName) => {
+  const name =
+    typeof albumName === "string" && albumName.trim()
+      ? albumName.trim().slice(0, 80)
+      : DEFAULT_ALBUM_NAME;
+  const slug = slugify(name);
+
+  const existingAlbum = await environment.DB.prepare(
+    `
+    SELECT
+      id,
+      slug,
+      name,
+      drive_folder_id AS driveFolderId
+    FROM albums
+    WHERE trip_id = ? AND slug = ?
+    `
+  )
+    .bind(tripId, slug)
+    .first();
+
+  if (existingAlbum) {
+    return {
+      created: false,
+      albumId: existingAlbum.id,
+      slug: existingAlbum.slug,
+      name: existingAlbum.name,
+      driveFolderId: existingAlbum.driveFolderId || null
+    };
+  }
+
+  const albumId = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
+  await environment.DB.prepare(
+    `
+    INSERT INTO albums (id, trip_id, slug, name, drive_folder_id, created_at)
+    VALUES (?, ?, ?, ?, NULL, ?)
+    `
+  )
+    .bind(albumId, tripId, slug, name, createdAt)
+    .run();
+
+  return {
+    created: true,
+    albumId,
+    slug,
+    name,
+    driveFolderId: null
+  };
+};
+
+const cacheTripFolderId = async (environment, tripId, driveFolderId) => {
+  await environment.DB.prepare(
+    `
+    UPDATE trips
+    SET drive_folder_id = ?
+    WHERE id = ?
+      AND (drive_folder_id IS NULL OR drive_folder_id = '')
+    `
+  )
+    .bind(driveFolderId, tripId)
+    .run();
+};
+
+const cacheAlbumFolderId = async (environment, albumId, driveFolderId) => {
+  await environment.DB.prepare(
+    `
+    UPDATE albums
+    SET drive_folder_id = ?
+    WHERE id = ?
+      AND (drive_folder_id IS NULL OR drive_folder_id = '')
+    `
+  )
+    .bind(driveFolderId, albumId)
+    .run();
 };
 
 const putWebCopyToR2 = async (environment, r2Key, webCopy) => {
@@ -134,6 +248,7 @@ const insertPhotoRow = async (environment, photoRow) => {
     INSERT INTO trip_photos (
       id,
       trip_id,
+      album_id,
       r2_key,
       media_url,
       drive_file_id,
@@ -142,12 +257,13 @@ const insertPhotoRow = async (environment, photoRow) => {
       bytes,
       created_at,
       created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
   )
     .bind(
       photoRow.id,
       photoRow.tripId,
+      photoRow.albumId,
       photoRow.r2Key,
       photoRow.mediaUrl,
       photoRow.driveFileId,
@@ -248,7 +364,9 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
       ? createdByRaw.trim().slice(0, 80)
       : null;
 
-  await ensureTripRow(environment, tripId);
+  const albumName = pickAlbumName(formData);
+  const tripRow = await ensureTripRow(environment, tripId);
+  const albumRow = await ensureAlbumRow(environment, tripId, albumName);
 
   const photoId = crypto.randomUUID();
   const createdAt = new Date().toISOString();
@@ -279,14 +397,33 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   }
 
   let tripFolderId;
+  let albumFolderId;
   try {
-    const folders = await ensureTripFolder(accessToken, tripId, environment);
+    const folders = await ensureTripFolder(
+      accessToken,
+      tripId,
+      environment,
+      tripRow.driveFolderId
+    );
     tripFolderId = folders.tripFolderId;
+    if (!tripRow.driveFolderId) {
+      await cacheTripFolderId(environment, tripId, tripFolderId);
+    }
+
+    albumFolderId = await ensureAlbumFolder(
+      accessToken,
+      tripFolderId,
+      albumRow.slug,
+      albumRow.driveFolderId
+    );
+    if (!albumRow.driveFolderId) {
+      await cacheAlbumFolderId(environment, albumRow.albumId, albumFolderId);
+    }
   } catch (folderError) {
     return {
       statusCode: 502,
       payload: {
-        error: "Failed to prepare Drive trip folder.",
+        error: "Failed to prepare Drive trip/album folders.",
         detail: String(folderError)
       }
     };
@@ -296,7 +433,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   try {
     const driveUpload = await uploadOriginalToDrive({
       accessToken,
-      tripFolderId,
+      parentFolderId: albumFolderId,
       fileName: driveFileName,
       contentType,
       bytes: originalBytes
@@ -313,7 +450,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   }
 
   const webCopy = await createWebCopy(environment, originalBytes, contentType);
-  const r2Key = `${tripId}/${stamp}-${photoId}.${webCopy.extension}`;
+  const r2Key = `${tripId}/${albumRow.slug}/${stamp}-${photoId}.${webCopy.extension}`;
   const mediaBase = (
     environment.MEDIA_PUBLIC_BASE || "https://media.morjan.family"
   ).replace(/\/+$/, "");
@@ -336,6 +473,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
     await insertPhotoRow(environment, {
       id: photoId,
       tripId,
+      albumId: albumRow.albumId,
       r2Key,
       mediaUrl,
       driveFileId,
@@ -363,6 +501,9 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
       ok: true,
       photoId,
       tripId,
+      album: albumRow.name,
+      albumSlug: albumRow.slug,
+      albumId: albumRow.albumId,
       mediaUrl,
       driveFileId,
       r2Key,

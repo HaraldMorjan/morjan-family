@@ -1,10 +1,13 @@
 /**
  * Google Drive helpers for morjan-api (OAuth refresh token + drive.file).
- * Creates app-owned `media/<trip-id>/` folders as needed.
+ * Creates app-owned `trips/<trip-id>/<album-slug>/` folders as needed.
  */
 
 let cachedAccessToken = null;
 let cachedAccessTokenExpiresAt = 0;
+
+const escapeDriveQueryValue = (value) =>
+  String(value || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 
 const driveJson = async (accessToken, url, options = {}) => {
   const response = await fetch(url, {
@@ -67,11 +70,12 @@ export const getDriveAccessToken = async (environment) => {
 };
 
 const findFolderByName = async (accessToken, folderName, parentFolderId) => {
+  const escapedName = escapeDriveQueryValue(folderName);
   const parentClause = parentFolderId
     ? ` and '${parentFolderId}' in parents`
     : "";
   const query = encodeURIComponent(
-    `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false${parentClause}`
+    `name = '${escapedName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false${parentClause}`
   );
 
   const listPayload = await driveJson(
@@ -109,33 +113,69 @@ const createFolder = async (accessToken, folderName, parentFolderId) => {
   return createPayload.id;
 };
 
-export const ensureTripFolder = async (accessToken, tripId, environment) => {
-  let mediaFolderId = environment.GOOGLE_DRIVE_ROOT_FOLDER_ID || null;
-
-  if (!mediaFolderId) {
-    mediaFolderId = await findFolderByName(accessToken, "media", null);
+export const ensureTripFolder = async (
+  accessToken,
+  tripId,
+  environment,
+  cachedTripFolderId = null
+) => {
+  if (cachedTripFolderId) {
+    return {
+      rootFolderId: environment.GOOGLE_DRIVE_ROOT_FOLDER_ID || null,
+      tripFolderId: cachedTripFolderId
+    };
   }
 
-  if (!mediaFolderId) {
-    mediaFolderId = await createFolder(accessToken, "media", null);
+  let rootFolderId = environment.GOOGLE_DRIVE_ROOT_FOLDER_ID || null;
+
+  if (!rootFolderId) {
+    rootFolderId = await findFolderByName(accessToken, "trips", null);
   }
 
-  let tripFolderId = await findFolderByName(
-    accessToken,
-    tripId,
-    mediaFolderId
-  );
+  if (!rootFolderId) {
+    // Legacy fallback: older installs used "media" as the root folder name.
+    rootFolderId = await findFolderByName(accessToken, "media", null);
+  }
+
+  if (!rootFolderId) {
+    rootFolderId = await createFolder(accessToken, "trips", null);
+  }
+
+  let tripFolderId = await findFolderByName(accessToken, tripId, rootFolderId);
 
   if (!tripFolderId) {
-    tripFolderId = await createFolder(accessToken, tripId, mediaFolderId);
+    tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
   }
 
-  return { mediaFolderId, tripFolderId };
+  return { rootFolderId, tripFolderId };
+};
+
+export const ensureAlbumFolder = async (
+  accessToken,
+  tripFolderId,
+  albumSlug,
+  cachedAlbumFolderId = null
+) => {
+  if (cachedAlbumFolderId) {
+    return cachedAlbumFolderId;
+  }
+
+  let albumFolderId = await findFolderByName(
+    accessToken,
+    albumSlug,
+    tripFolderId
+  );
+
+  if (!albumFolderId) {
+    albumFolderId = await createFolder(accessToken, albumSlug, tripFolderId);
+  }
+
+  return albumFolderId;
 };
 
 export const uploadOriginalToDrive = async ({
   accessToken,
-  tripFolderId,
+  parentFolderId,
   fileName,
   contentType,
   bytes
@@ -152,7 +192,7 @@ export const uploadOriginalToDrive = async ({
       },
       body: JSON.stringify({
         name: fileName,
-        parents: [tripFolderId]
+        parents: [parentFolderId]
       })
     }
   );

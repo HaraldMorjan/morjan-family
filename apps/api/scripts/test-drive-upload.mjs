@@ -60,17 +60,19 @@ const driveFetch = async (accessToken, url, options = {}) => {
   return payload;
 };
 
-const findOrCreateMediaFolder = async (accessToken) => {
-  const query = encodeURIComponent(
-    "name = 'media' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
-  );
-  const listPayload = await driveFetch(
-    accessToken,
-    `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)`
-  );
+const findOrCreateTripsFolder = async (accessToken) => {
+  for (const folderName of ["trips", "media"]) {
+    const query = encodeURIComponent(
+      `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`
+    );
+    const listPayload = await driveFetch(
+      accessToken,
+      `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)`
+    );
 
-  if (listPayload.files && listPayload.files.length > 0) {
-    return listPayload.files[0].id;
+    if (listPayload.files && listPayload.files.length > 0) {
+      return listPayload.files[0].id;
+    }
   }
 
   const createPayload = await driveFetch(
@@ -80,7 +82,7 @@ const findOrCreateMediaFolder = async (accessToken) => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        name: "media",
+        name: "trips",
         mimeType: "application/vnd.google-apps.folder"
       })
     }
@@ -124,15 +126,15 @@ const main = async () => {
   const accessToken = await getAccessToken();
   console.log("Access token OK.");
 
-  console.log('Finding or creating Drive folder "media"...');
-  const folderId = await findOrCreateMediaFolder(accessToken);
+  console.log('Finding or creating Drive folder "trips" (legacy "media" OK)...');
+  const folderId = await findOrCreateTripsFolder(accessToken);
   console.log("Folder id:", folderId);
 
   console.log("Uploading test file...");
   const uploadedFile = await uploadTestFile(accessToken, folderId);
   console.log("Upload OK:");
   console.log(JSON.stringify(uploadedFile, null, 2));
-  console.log("\nOpen Drive as morjan.family.media@gmail.com and look in media/");
+  console.log("\nOpen Drive as morjan.family.media@gmail.com and look in trips/");
 };
 
 main().catch((error) => {
