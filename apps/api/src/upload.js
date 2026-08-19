@@ -177,17 +177,36 @@ export const ensureAlbumRow = async (environment, tripId, albumName) => {
     `
     INSERT INTO albums (id, trip_id, slug, name, drive_folder_id, created_at)
     VALUES (?, ?, ?, ?, NULL, ?)
+    ON CONFLICT (trip_id, slug) DO NOTHING
     `
   )
     .bind(albumId, tripId, slug, name, createdAt)
     .run();
 
+  const savedAlbum = await environment.DB.prepare(
+    `
+    SELECT
+      id,
+      slug,
+      name,
+      drive_folder_id AS driveFolderId
+    FROM albums
+    WHERE trip_id = ? AND slug = ?
+    `
+  )
+    .bind(tripId, slug)
+    .first();
+
+  if (!savedAlbum) {
+    throw new Error("Album insert completed without a readable row.");
+  }
+
   return {
-    created: true,
-    albumId,
-    slug,
-    name,
-    driveFolderId: null
+    created: savedAlbum.id === albumId,
+    albumId: savedAlbum.id,
+    slug: savedAlbum.slug,
+    name: savedAlbum.name,
+    driveFolderId: savedAlbum.driveFolderId || null
   };
 };
 
