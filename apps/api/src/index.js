@@ -11,6 +11,8 @@ import {
   getDriveAccessToken
 } from "./drive.js";
 import {
+  cacheAlbumFolderId,
+  cacheTripFolderId,
   ensureAlbumRow,
   ensureTripRow,
   handlePhotoUpload,
@@ -320,35 +322,30 @@ const createAlbum = async (environment, tripId, name) => {
       trip.driveFolderId || null
     );
 
-    if (!trip.driveFolderId) {
-      await environment.DB.prepare(
-        `
-        UPDATE trips
-        SET drive_folder_id = ?
-        WHERE id = ?
-        `
-      )
-        .bind(folders.tripFolderId, tripId)
-        .run();
+    let tripFolderId = folders.tripFolderId;
+    if (trip.driveFolderId !== tripFolderId) {
+      tripFolderId = await cacheTripFolderId(
+        environment,
+        tripId,
+        tripFolderId,
+        trip.driveFolderId
+      );
     }
 
-    const albumFolderId = await ensureAlbumFolder(
+    let albumFolderId = await ensureAlbumFolder(
       accessToken,
-      folders.tripFolderId,
+      tripFolderId,
       albumRow.slug,
       albumRow.driveFolderId
     );
 
-    if (!albumRow.driveFolderId) {
-      await environment.DB.prepare(
-        `
-        UPDATE albums
-        SET drive_folder_id = ?
-        WHERE id = ?
-        `
-      )
-        .bind(albumFolderId, albumRow.albumId)
-        .run();
+    if (albumRow.driveFolderId !== albumFolderId) {
+      albumFolderId = await cacheAlbumFolderId(
+        environment,
+        albumRow.albumId,
+        albumFolderId,
+        albumRow.driveFolderId
+      );
     }
 
     return {
