@@ -177,44 +177,89 @@ export const ensureAlbumRow = async (environment, tripId, albumName) => {
     `
     INSERT INTO albums (id, trip_id, slug, name, drive_folder_id, created_at)
     VALUES (?, ?, ?, ?, NULL, ?)
+    ON CONFLICT (trip_id, slug) DO NOTHING
     `
   )
     .bind(albumId, tripId, slug, name, createdAt)
     .run();
 
+  const savedAlbum = await environment.DB.prepare(
+    `
+    SELECT
+      id,
+      slug,
+      name,
+      drive_folder_id AS driveFolderId
+    FROM albums
+    WHERE trip_id = ? AND slug = ?
+    `
+  )
+    .bind(tripId, slug)
+    .first();
+
+  if (!savedAlbum) {
+    throw new Error("Album insert completed without a readable row.");
+  }
+
   return {
-    created: true,
-    albumId,
-    slug,
-    name,
-    driveFolderId: null
+    created: savedAlbum.id === albumId,
+    albumId: savedAlbum.id,
+    slug: savedAlbum.slug,
+    name: savedAlbum.name,
+    driveFolderId: savedAlbum.driveFolderId || null
   };
 };
 
-const cacheTripFolderId = async (environment, tripId, driveFolderId) => {
+export const cacheTripFolderId = async (
+  environment,
+  tripId,
+  driveFolderId,
+  previousDriveFolderId = null
+) => {
   await environment.DB.prepare(
     `
     UPDATE trips
     SET drive_folder_id = ?
     WHERE id = ?
-      AND (drive_folder_id IS NULL OR drive_folder_id = '')
+      AND COALESCE(drive_folder_id, '') = ?
     `
   )
-    .bind(driveFolderId, tripId)
+    .bind(driveFolderId, tripId, previousDriveFolderId || "")
     .run();
+
+  const trip = await environment.DB.prepare(
+    "SELECT drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
+  )
+    .bind(tripId)
+    .first();
+
+  return trip?.driveFolderId || driveFolderId;
 };
 
-const cacheAlbumFolderId = async (environment, albumId, driveFolderId) => {
+export const cacheAlbumFolderId = async (
+  environment,
+  albumId,
+  driveFolderId,
+  previousDriveFolderId = null
+) => {
   await environment.DB.prepare(
     `
     UPDATE albums
     SET drive_folder_id = ?
     WHERE id = ?
-      AND (drive_folder_id IS NULL OR drive_folder_id = '')
+      AND COALESCE(drive_folder_id, '') = ?
     `
   )
-    .bind(driveFolderId, albumId)
+    .bind(driveFolderId, albumId, previousDriveFolderId || "")
     .run();
+
+  const album = await environment.DB.prepare(
+    "SELECT drive_folder_id AS driveFolderId FROM albums WHERE id = ?"
+  )
+    .bind(albumId)
+    .first();
+
+  return album?.driveFolderId || driveFolderId;
 };
 
 const putWebCopyToR2 = async (environment, r2Key, webCopy) => {
@@ -406,8 +451,13 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
       tripRow.driveFolderId
     );
     tripFolderId = folders.tripFolderId;
-    if (!tripRow.driveFolderId) {
-      await cacheTripFolderId(environment, tripId, tripFolderId);
+    if (tripRow.driveFolderId !== tripFolderId) {
+      tripFolderId = await cacheTripFolderId(
+        environment,
+        tripId,
+        tripFolderId,
+        tripRow.driveFolderId
+      );
     }
 
     albumFolderId = await ensureAlbumFolder(
@@ -416,8 +466,13 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
       albumRow.slug,
       albumRow.driveFolderId
     );
-    if (!albumRow.driveFolderId) {
-      await cacheAlbumFolderId(environment, albumRow.albumId, albumFolderId);
+    if (albumRow.driveFolderId !== albumFolderId) {
+      albumFolderId = await cacheAlbumFolderId(
+        environment,
+        albumRow.albumId,
+        albumFolderId,
+        albumRow.driveFolderId
+      );
     }
   } catch (folderError) {
     return {

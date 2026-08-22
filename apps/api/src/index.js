@@ -11,6 +11,8 @@ import {
   getDriveAccessToken
 } from "./drive.js";
 import {
+  cacheAlbumFolderId,
+  cacheTripFolderId,
   ensureAlbumRow,
   ensureTripRow,
   handlePhotoUpload,
@@ -154,7 +156,7 @@ const listTripPhotos = async (environment, tripId, albumSlug = null) => {
   return result.results || [];
 };
 
-const createTrip = async (environment, title) => {
+export const createTrip = async (environment, title) => {
   const tripTitle = String(title || "").trim().slice(0, 120);
   if (!tripTitle) {
     return {
@@ -174,12 +176,17 @@ const createTrip = async (environment, title) => {
   }
 
   const existingTrip = await environment.DB.prepare(
-    "SELECT id, title FROM trips WHERE id = ?"
+    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
   )
     .bind(tripId)
     .first();
 
-  if (existingTrip) {
+  const shouldResumeIncompleteTrip =
+    existingTrip &&
+    !existingTrip.driveFolderId &&
+    existingTrip.title === tripTitle;
+
+  if (existingTrip && !shouldResumeIncompleteTrip) {
     let foundFreeId = false;
     for (let suffix = 2; suffix < 50; suffix += 1) {
       const candidateId = `${tripId.slice(0, 60)}-${suffix}`;
@@ -322,35 +329,30 @@ const createAlbum = async (environment, tripId, name) => {
       trip.driveFolderId || null
     );
 
-    if (!trip.driveFolderId) {
-      await environment.DB.prepare(
-        `
-        UPDATE trips
-        SET drive_folder_id = ?
-        WHERE id = ?
-        `
-      )
-        .bind(folders.tripFolderId, tripId)
-        .run();
+    let tripFolderId = folders.tripFolderId;
+    if (trip.driveFolderId !== tripFolderId) {
+      tripFolderId = await cacheTripFolderId(
+        environment,
+        tripId,
+        tripFolderId,
+        trip.driveFolderId
+      );
     }
 
-    const albumFolderId = await ensureAlbumFolder(
+    let albumFolderId = await ensureAlbumFolder(
       accessToken,
-      folders.tripFolderId,
+      tripFolderId,
       albumRow.slug,
       albumRow.driveFolderId
     );
 
-    if (!albumRow.driveFolderId) {
-      await environment.DB.prepare(
-        `
-        UPDATE albums
-        SET drive_folder_id = ?
-        WHERE id = ?
-        `
-      )
-        .bind(albumFolderId, albumRow.albumId)
-        .run();
+    if (albumRow.driveFolderId !== albumFolderId) {
+      albumFolderId = await cacheAlbumFolderId(
+        environment,
+        albumRow.albumId,
+        albumFolderId,
+        albumRow.driveFolderId
+      );
     }
 
     return {

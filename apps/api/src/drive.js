@@ -113,13 +113,55 @@ const createFolder = async (accessToken, folderName, parentFolderId) => {
   return createPayload.id;
 };
 
+const isUsableFolder = async (
+  accessToken,
+  folderId,
+  expectedParentFolderId = null
+) => {
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(folderId)}?fields=id,mimeType,parents,trashed`,
+    {
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      }
+    }
+  );
+
+  if (response.status === 404) {
+    return false;
+  }
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(
+      `Drive API ${response.status}: ${JSON.stringify(payload)}`
+    );
+  }
+
+  if (
+    payload.trashed ||
+    payload.mimeType !== "application/vnd.google-apps.folder"
+  ) {
+    return false;
+  }
+
+  return (
+    !expectedParentFolderId ||
+    (Array.isArray(payload.parents) &&
+      payload.parents.includes(expectedParentFolderId))
+  );
+};
+
 export const ensureTripFolder = async (
   accessToken,
   tripId,
   environment,
   cachedTripFolderId = null
 ) => {
-  if (cachedTripFolderId) {
+  if (
+    cachedTripFolderId &&
+    (await isUsableFolder(accessToken, cachedTripFolderId))
+  ) {
     return {
       rootFolderId: environment.GOOGLE_DRIVE_ROOT_FOLDER_ID || null,
       tripFolderId: cachedTripFolderId
@@ -156,7 +198,14 @@ export const ensureAlbumFolder = async (
   albumSlug,
   cachedAlbumFolderId = null
 ) => {
-  if (cachedAlbumFolderId) {
+  if (
+    cachedAlbumFolderId &&
+    (await isUsableFolder(
+      accessToken,
+      cachedAlbumFolderId,
+      tripFolderId
+    ))
+  ) {
     return cachedAlbumFolderId;
   }
 
