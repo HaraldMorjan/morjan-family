@@ -1,0 +1,320 @@
+:root {
+  --skye-sky: #7dd3fc;
+  --skye-pink: #fb7185;
+  --skye-deep: #be123c;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 15%, #fda4af, transparent 28%),
+    radial-gradient(circle at 80% 20%, #bae6fd, transparent 32%),
+    linear-gradient(180deg, #e0f2fe 0%, #fff1f2 55%, #fecdd3 100%);
+}
+
+.skye-shell {
+  width: min(40rem, 100%);
+  margin: 0 auto;
+  padding: 1rem 1rem 2.5rem;
+}
+
+.skye-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.skye-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.skye-icon {
+  flex-shrink: 0;
+  width: clamp(108px, 28vw, 148px);
+  height: clamp(108px, 28vw, 148px);
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  filter: drop-shadow(0 4px 10px rgba(190, 18, 60, 0.25));
+}
+
+.skye-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 6vw, 2.2rem);
+  color: var(--skye-deep);
+  line-height: 1.05;
+}
+
+.skye-panel {
+  margin-top: 1rem;
+  padding: 1.1rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 4px solid var(--skye-pink);
+  box-shadow: 6px 6px 0 #fecdd3;
+}
+
+.prompt-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.target-word {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  min-height: 2.6rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.85rem;
+  background: #fff1f2;
+  border: 3px solid var(--skye-pink);
+  color: var(--skye-deep);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  box-shadow: 3px 3px 0 #fecdd3;
+}
+
+.target-syllable {
+  display: inline-block;
+  padding: 0.12rem 0.18rem;
+  border-radius: 0.45rem;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.target-syllable--later {
+  color: #9f1239;
+  opacity: 0.45;
+}
+
+.target-syllable--done {
+  color: #14532d;
+  background: #bbf7d0;
+}
+
+/* The syllable she should tap next — marked on the word */
+.target-syllable--next {
+  color: #9f1239;
+  background: #fde047;
+  box-shadow:
+    0 0 0 3px #facc15,
+    0 3px 0 #ca8a04;
+  transform: translateY(-1px);
+}
+
+.target-syllable--shake {
+  animation: target-pulse 0.35s ease;
+}
+
+.target-word--pulse {
+  animation: target-pulse 0.35s ease;
+}
+
+.target-word--done {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #14532d;
+  box-shadow: 3px 3px 0 #86efac;
+}
+
+.target-word--done .target-syllable {
+  opacity: 1;
+  color: #14532d;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.round-meter {
+  margin: 0.45rem 0 0;
+  font-weight: 800;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.question-line {
+  margin: 0.5rem 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+@keyframes target-pulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.balloon-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.balloon {
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fda4af, #fb7185);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #be123c;
+}
+
+.balloon.used {
+  opacity: 0.35;
+}
+
+.build-line {
+  min-height: 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--skye-deep);
+}
+
+.speak-btn {
+  display: flex;
+  margin: 0.65rem auto 0.25rem;
+  min-height: var(--tap-min);
+  padding: 0.45rem 1.1rem;
+  font-weight: 800;
+  color: var(--skye-deep);
+  border-color: var(--skye-pink);
+  background: #fff;
+}
+
+.target-word[role="button"],
+.sentence[role="button"] {
+  cursor: pointer;
+}
+
+.target-word[role="button"]:active,
+.sentence[role="button"]:active {
+  transform: scale(0.98);
+}
+
+.big-emoji {
+  font-size: 4rem;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.picture-speak {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.45rem auto 0.35rem;
+  width: 7.6rem;
+  height: 7.6rem;
+  border: 0;
+  border-radius: 1.4rem;
+  background: #ffe4f1;
+  font-size: 4.2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 #fb7185;
+}
+
+.picture-speak:active {
+  transform: scale(0.97);
+}
+
+.well-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin: 0.55rem 0 0.25rem;
+}
+
+.well {
+  min-width: 3.4rem;
+  min-height: 3.4rem;
+  padding: 0 0.35rem;
+  border-radius: 0.85rem;
+  border: 3px dashed #fb7185;
+  background: #fff1f2;
+  color: var(--skye-deep);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.well.is-in {
+  border-style: solid;
+  background: #fef08a;
+}
+
+.built-word {
+  min-height: 2rem;
+  margin: 0.2rem 0 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6vw, 2.3rem);
+  font-weight: 800;
+  color: var(--skye-deep);
+}
+
+.sentence {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 5vw, 1.9rem);
+  text-align: center;
+  color: var(--ink);
+  margin: 0.75rem 0;
+}
+
+.skye-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+/* .btn { display } otherwise wins over the HTML hidden attribute */
+.skye-actions .btn[hidden] {
+  display: none !important;
+}
+
+.skye-mode-pick {
+  border-color: #fb7185;
+  background: linear-gradient(180deg, #fff 0%, #fff1f2 100%);
+  box-shadow: 4px 4px 0 #be123c;
+}
+
+.skye-mode-pick h2 {
+  color: #be123c;
+}
+
+.skye-panel .mode-picker__lead {
+  color: var(--skye-deep);
+}

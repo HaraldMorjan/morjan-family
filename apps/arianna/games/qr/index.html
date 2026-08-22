@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Misiones QR de Arianna" />
+    <title>Misiones QR · Club de Arianna</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="./qr.css" />
+  </head>
+  <body class="qr-body">
+    <div class="qr-bg no-print" aria-hidden="true"></div>
+    <main class="club-shell">
+      <header class="club-top no-print">
+        <h1 class="club-brand">Misiones QR</h1>
+        <div class="star-pill" id="starPill">⭐ 0</div>
+      </header>
+
+      <p class="qr-lead no-print">
+        Escanea un código con la cámara. ¡Los verdes ya están listos!
+      </p>
+
+      <div class="qr-tools no-print">
+        <button type="button" class="btn" id="printButton">🖨 Imprimir</button>
+        <a class="btn" href="../">← Club</a>
+      </div>
+
+      <div class="mission-grid" id="missionGrid"></div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script type="module" src="./qr.js"></script>
+  </body>
+</html>

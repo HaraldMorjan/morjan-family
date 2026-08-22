@@ -1,0 +1,478 @@
+:root {
+  --ink: #5a1640;
+  --ink-soft: #8a3a68;
+  --paper: #fff0f7;
+  --pink: #ff4fa3;
+  --pink-deep: #d91f7a;
+  --pink-soft: #ffb3d9;
+  --card: #ffffff;
+  --green: #16a34a;
+  --green-soft: #bbf7d0;
+  --star: #f59e0b;
+  --font-display: "Baloo 2", "Comic Sans MS", cursive;
+  --font-body: "Nunito", "Segoe UI", sans-serif;
+  --tap-min: 64px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background: var(--paper);
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+}
+
+.club-shell {
+  position: relative;
+  z-index: 1;
+  width: min(40rem, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 1.75rem);
+  padding-bottom: 3rem;
+}
+
+.club-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.club-brand {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 7vw, 2.6rem);
+  line-height: 1;
+  color: var(--pink-deep);
+}
+
+.star-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--tap-min);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 3px solid var(--star);
+  color: #78350f;
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  padding: 0.75rem 1.25rem;
+  border: 3px solid var(--pink);
+  border-radius: 1rem;
+  background: var(--card);
+  color: var(--pink-deep);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--pink-soft);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--pink-soft);
+}
+
+.btn-primary {
+  background: var(--pink);
+  color: #fff;
+}
+
+.btn-done {
+  border-color: var(--green);
+  background: var(--green-soft);
+  color: #14532d;
+  box-shadow: 4px 4px 0 #86efac;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.choice-btn {
+  min-height: var(--tap-min);
+  border: 3px solid var(--pink-soft);
+  border-radius: 1rem;
+  background: #fff;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--pink-deep);
+  cursor: pointer;
+}
+
+.choice-btn:active {
+  transform: scale(0.97);
+}
+
+.feedback {
+  margin-top: 0.75rem;
+  min-height: 1.5rem;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.feedback-ok {
+  color: var(--green);
+}
+
+.mission-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem;
+  background: var(--card);
+  border: 4px solid var(--pink);
+  border-radius: 1.25rem;
+  box-shadow: 6px 6px 0 var(--pink-soft);
+  text-align: center;
+  break-inside: avoid;
+}
+
+.mission-tile--done {
+  border-color: var(--green);
+  background: linear-gradient(180deg, #f0fdf4 0%, #bbf7d0 100%);
+  box-shadow: 6px 6px 0 #86efac;
+}
+
+.mission-tile--done::after {
+  content: "✓ ¡Listo!";
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.mission-emoji {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.mission-label {
+  margin: 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.mission-points {
+  margin: 0;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #fff7ed;
+  border: 2px solid var(--star);
+  color: #78350f;
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.mission-qr {
+  width: 140px;
+  height: 140px;
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+
+.mission-qr img,
+.mission-qr canvas {
+  display: block;
+  width: 140px !important;
+  height: 140px !important;
+}
+
+.game-card {
+  display: block;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 0.85rem;
+  background: var(--card);
+  border: 4px solid var(--pink);
+  border-radius: 1.25rem;
+  box-shadow: 6px 6px 0 var(--pink-soft);
+  text-decoration: none;
+  color: inherit;
+}
+
+.game-card h2 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  color: var(--pink-deep);
+}
+
+.game-card p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.prize-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  margin-bottom: 0.65rem;
+  background: #fff;
+  border: 3px solid var(--pink-soft);
+  border-radius: 1rem;
+}
+
+.sticker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sticker {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #fff;
+  border: 3px solid var(--pink-soft);
+  font-size: 1.4rem;
+}
+
+.mode-picker {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.mode-picker__lead {
+  margin: 0 0 0.25rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.mode-pick {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border-radius: 1.1rem;
+  border: 3px solid var(--pink-soft);
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 4px 4px 0 #fbcfe8;
+  text-align: left;
+}
+
+.mode-pick:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #fbcfe8;
+}
+
+.mode-pick h2 {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--pink-deep);
+}
+
+.mode-pick p {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.mode-pick--soon {
+  opacity: 0.55;
+  pointer-events: none;
+  box-shadow: none;
+  border-style: dashed;
+}
+
+.mode-pick__badge {
+  display: inline-block;
+  margin-top: 0.45rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #fce7f3;
+  color: var(--pink-deep);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.section-title {
+  margin: 1.5rem 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--pink-deep);
+}
+
+/* Character header mood — applied to brand wrapper (img cannot host ::after) */
+.rumi-brand,
+.skye-brand,
+.kuromi-brand {
+  position: relative;
+}
+
+.rumi-brand .rumi-icon,
+.skye-brand .skye-icon,
+.kuromi-brand .kuromi-icon {
+  transform-origin: center bottom;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.character-mood--happy .rumi-icon,
+.character-mood--happy .skye-icon,
+.character-mood--happy .kuromi-icon {
+  animation: character-mood-happy 0.9s ease;
+  filter: drop-shadow(0 0 14px rgba(74, 222, 128, 0.75))
+    drop-shadow(0 0 6px rgba(250, 204, 21, 0.55));
+}
+
+.character-mood--sad .rumi-icon,
+.character-mood--sad .skye-icon,
+.character-mood--sad .kuromi-icon {
+  animation: character-mood-sad 0.9s ease;
+  filter: grayscale(0.35) saturate(0.75)
+    drop-shadow(0 0 10px rgba(96, 165, 250, 0.55));
+}
+
+.character-mood--sad::after {
+  content: "";
+  position: absolute;
+  left: 4.25rem;
+  top: 40%;
+  width: 0.4rem;
+  height: 0.6rem;
+  border-radius: 60% 60% 70% 70%;
+  background: #38bdf8;
+  box-shadow: 0 2px 0 rgba(14, 165, 233, 0.45);
+  animation: character-mood-tear 0.9s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes character-mood-happy {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-10px) scale(1.08);
+  }
+  50% {
+    transform: translateY(0) scale(1.02);
+  }
+  70% {
+    transform: translateY(-5px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes character-mood-sad {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  20% {
+    transform: rotate(-8deg) translateY(2px);
+  }
+  50% {
+    transform: rotate(6deg) translateY(3px);
+  }
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+}
+
+@keyframes character-mood-tear {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:active,
+  .choice-btn:active {
+    transform: none;
+  }
+
+  .character-mood--happy .rumi-icon,
+  .character-mood--happy .skye-icon,
+  .character-mood--happy .kuromi-icon,
+  .character-mood--sad .rumi-icon,
+  .character-mood--sad .skye-icon,
+  .character-mood--sad .kuromi-icon {
+    animation: none;
+  }
+
+  .character-mood--sad::after {
+    animation: none;
+    opacity: 0.85;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .mission-tile {
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .mission-tile--done::after {
+    display: none;
+  }
+}

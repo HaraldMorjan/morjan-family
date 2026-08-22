@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kuromi Spell — 3 wild takes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --pink: #f9a8d4;
+        --font-display: "Baloo 2", "Comic Sans MS", cursive;
+        --font-body: "Nunito", "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #faf5ff;
+        font-family: var(--font-body);
+        background:
+          radial-gradient(circle at 80% 0%, #fb7185, transparent 34%),
+          radial-gradient(circle at 10% 80%, #c4b5fd, transparent 30%),
+          #16041c;
+      }
+      .board { width: min(1180px, 100%); margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+      .board-kicker { margin: 0; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fda4af; }
+      h1 { margin: 0.25rem 0 0; font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.8rem); line-height: 1; color: #f9a8d4; }
+      .lead { margin: 0.7rem 0 1.6rem; max-width: 42rem; font-weight: 700; color: #fce7f3; }
+      .phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+      .phone { border-radius: 1.6rem; padding: 0.65rem; background: #0c0612; border: 3px solid #f9a8d4; }
+      .phone--pick { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35); }
+      .screen {
+        border-radius: 1.1rem;
+        padding: 0.7rem 0.6rem 0.85rem;
+        min-height: 28rem;
+      }
+      .screen-a { background: radial-gradient(circle at 50% 30%, #6d28d9, #1e1b4b 70%); }
+      .screen-b { background: radial-gradient(circle at 50% 20%, #831843, #1e1b4b 72%); }
+      .screen-c { background: radial-gradient(circle at 70% 10%, #7c3aed, #111827 70%); }
+      .top { display: flex; justify-content: space-between; align-items: center; }
+      .brand { display: flex; align-items: center; gap: 0.35rem; }
+      .brand img { width: 48px; height: 48px; }
+      .brand h2 { margin: 0; font-family: var(--font-display); font-size: 0.95rem; color: #f9a8d4; line-height: 1.05; }
+      .stars { padding: 0.15rem 0.5rem; border-radius: 999px; background: #fff7ed; border: 2px solid #f59e0b; color: #78350f; font-weight: 800; font-size: 0.75rem; }
+      .stage {
+        margin-top: 0.55rem;
+        text-align: center;
+      }
+      .said { margin: 0; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fbcfe8; }
+      .food { margin: 0.2rem 0 0; font-size: 4.2rem; line-height: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35)); }
+      .home { margin: 0.35rem 0 0; font-family: var(--font-display); font-size: 1.35rem; color: #fde68a; }
+      .seals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.35rem; margin-top: 0.7rem; }
+      .seal {
+        min-height: 4.2rem;
+        border-radius: 50%;
+        border: 3px dashed #f9a8d4;
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .seal.is-on { background: #fff7ed; color: #831843; border-style: solid; border-color: #f59e0b; transform: rotate(-8deg); }
+      .skulls { margin: 0.55rem 0 0; font-size: 1.1rem; letter-spacing: 0.2rem; }
+      .slots { display: flex; justify-content: center; gap: 0.35rem; margin-top: 0.5rem; }
+      .slot {
+        width: 2.4rem;
+        height: 2.8rem;
+        border-radius: 0.5rem;
+        background: #fff;
+        color: #4c1d95;
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 0 #f472b6;
+      }
+      .slot.is-empty { background: rgba(255,255,255,0.15); color: #f9a8d4; box-shadow: none; }
+      .tiles { display: flex; justify-content: center; gap: 0.35rem; margin-top: 0.7rem; flex-wrap: wrap; }
+      .tile {
+        width: 2.6rem;
+        height: 2.6rem;
+        border-radius: 0.65rem;
+        background: #fde68a;
+        color: #831843;
+        font-family: var(--font-display);
+        font-size: 1.45rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 0 #b45309;
+      }
+      .bubble {
+        margin: 0.45rem auto 0;
+        max-width: 11rem;
+        padding: 0.45rem 0.7rem;
+        border-radius: 1rem 1rem 1rem 0.25rem;
+        background: #fff;
+        color: #4c1d95;
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        box-shadow: 4px 4px 0 #f472b6;
+      }
+      .menu { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.65rem; }
+      .dish {
+        min-height: 3.1rem;
+        border-radius: 0.9rem;
+        background: #fff;
+        color: #4c1d95;
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 4px 4px 0 #7c3aed;
+      }
+      .dish.is-on { background: #fde68a; box-shadow: 4px 4px 0 #b45309; }
+      .caption { padding: 0.75rem 0.1rem 0; }
+      .caption h3 { margin: 0; font-family: var(--font-display); font-size: 1.2rem; color: #fde68a; }
+      .caption p { margin: 0.3rem 0 0; font-weight: 700; color: #fce7f3; font-size: 0.9rem; }
+      .pill { display: inline-block; margin-bottom: 0.25rem; padding: 0.1rem 0.45rem; border-radius: 999px; background: #fbbf24; color: #78350f; font-size: 0.65rem; font-weight: 800; }
+      @media (max-width: 900px) { .phones { grid-template-columns: 1fr; max-width: 22rem; margin: 0 auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <p class="board-kicker">food · Spell — this one can be the club ritual</p>
+      <h1>Stop the quiz. Make her stamp, spell, or serve.</h1>
+      <p class="lead">
+        Right now it’s a worksheet: tiny juice, a Hear button she can skip,
+        three white words. “Spell” is a lie. A 4-year-old needs a show —
+        and still English ↔ Spanish.
+      </p>
+      <div class="phones">
+        <article>
+          <div class="phone">
+            <div class="screen screen-a">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <div class="stage">
+                <p class="said">Kuromi susurra</p>
+                <div class="food">🧃</div>
+                <p class="home">Es jugo</p>
+                <div class="seals">
+                  <div class="seal">water</div>
+                  <div class="seal">apple</div>
+                  <div class="seal is-on">juice</div>
+                </div>
+                <p class="skulls">💀 💀 🤍</p>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>1. Secret stamps</h3>
+            <p>
+              Giant food. She already knows <b>jugo</b>. The whole plate
+              whispers <b>juice</b>. She slaps the English seal on it.
+              Three skulls, not 0/3 twice.
+            </p>
+          </div>
+        </article>
+        <article>
+          <div class="phone">
+            <div class="screen screen-b">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <div class="stage">
+                <p class="said">Arma la palabra</p>
+                <div class="food">🥚</div>
+                <p class="home">huevo → egg</p>
+                <div class="slots">
+                  <div class="slot">e</div>
+                  <div class="slot">g</div>
+                  <div class="slot is-empty">?</div>
+                </div>
+                <div class="tiles">
+                  <div class="tile">g</div>
+                  <div class="tile">a</div>
+                  <div class="tile">e</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>2. Real spell — short words only</h3>
+            <p>
+              This is the only version that earns the name Spell.
+              <b>egg, milk, cake</b> — 3–4 letters. Picture + Spanish first,
+              then she builds the English. Juice / pancakes wait.
+            </p>
+          </div>
+        </article>
+        <article>
+          <div class="phone phone--pick">
+            <div class="screen screen-c">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <div class="stage">
+                <p class="said">Kuromi pide</p>
+                <div class="food">🧃</div>
+                <div class="bubble">🔊 juice!</div>
+                <div class="menu">
+                  <div class="dish">water</div>
+                  <div class="dish is-on">juice</div>
+                  <div class="dish">apple</div>
+                </div>
+                <p class="home">jugo = juice</p>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <span class="pill">Recommended — go crazy</span>
+            <h3>3. Secret diner</h3>
+            <p>
+              Kuromi is the customer. The food sits on the table. She
+              <b>hears</b> juice (no tiny Hear). She serves the English
+              card. Then the couple: jugo = juice.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

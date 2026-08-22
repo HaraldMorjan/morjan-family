@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rumi Luces — 3 suggestions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --neon: #ff2d95;
+        --pink: #f9a8d4;
+        --font-display: "Baloo 2", "Comic Sans MS", cursive;
+        --font-body: "Nunito", "Segoe UI", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #faf5ff;
+        font-family: var(--font-body);
+        background:
+          radial-gradient(circle at 50% 0%, #6d28d9, transparent 36%),
+          linear-gradient(180deg, #2e1065 0%, #1a0b2e 55%, #4a044e 100%);
+      }
+      .board { width: min(1180px, 100%); margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+      .board-kicker { margin: 0; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #fbcfe8; }
+      h1 { margin: 0.3rem 0 0; font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.05; color: var(--pink); text-shadow: 0 0 18px rgba(255, 45, 149, 0.55); }
+      .lead { margin: 0.6rem 0 1.5rem; max-width: 44rem; font-weight: 700; color: #fce7f3; }
+      .phones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+      .phone { border-radius: 1.6rem; padding: 0.65rem; background: #12081f; border: 3px solid #f9a8d4; }
+      .phone--pick { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.35); }
+      .screen {
+        border-radius: 1.1rem;
+        padding: 0.7rem 0.6rem 0.85rem;
+        background: radial-gradient(circle at 50% 0%, #4c1d95, #1a0b2e 58%);
+        border: 2px solid #f472b6;
+      }
+      .top { display: flex; justify-content: space-between; align-items: center; }
+      .brand { display: flex; align-items: center; gap: 0.35rem; }
+      .brand img { width: 48px; height: 48px; }
+      .brand h2 { margin: 0; font-family: var(--font-display); font-size: 0.95rem; color: #f9a8d4; line-height: 1.05; }
+      .stars { padding: 0.15rem 0.5rem; border-radius: 999px; background: #fff7ed; border: 2px solid #f59e0b; color: #78350f; font-weight: 800; font-size: 0.75rem; }
+      .meta { margin: 0.45rem 0 0; font-size: 0.68rem; font-weight: 800; color: #fbcfe8; }
+      .tabs { display: flex; gap: 0.3rem; margin: 0.4rem 0 0.5rem; }
+      .tab {
+        flex: 1;
+        min-height: 1.7rem;
+        border-radius: 999px;
+        border: 2px solid #f9a8d4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #fce7f3;
+      }
+      .tab.is-on { background: #f472b6; color: #1a0b2e; }
+      .stage { text-align: center; }
+      .now-label { margin: 0; font-weight: 800; font-size: 0.72rem; color: #fde68a; }
+      .now {
+        margin: 0.15rem auto 0.4rem;
+        min-width: 3.6rem;
+        height: 3.2rem;
+        padding: 0 0.45rem;
+        border-radius: 1rem;
+        background: #fff7ed;
+        color: #9d174d;
+        font-family: var(--font-display);
+        font-size: 1.85rem;
+        line-height: 3.2rem;
+        box-shadow: 0 0 16px rgba(251, 191, 36, 0.55);
+      }
+      .hunt {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.32rem;
+      }
+      .pad {
+        min-height: 2.85rem;
+        border-radius: 0.75rem;
+        background: linear-gradient(180deg, #db2777, #9d174d);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pad.is-on { background: linear-gradient(180deg, #22c55e, #15803d); }
+      .wave { margin: 0.4rem 0 0; font-weight: 800; font-size: 0.78rem; color: #fff7ed; }
+      .yes { margin: 0.15rem 0 0; font-family: var(--font-display); color: #86efac; font-size: 1rem; }
+      .caption { padding: 0.75rem 0.1rem 0; }
+      .caption h3 { margin: 0; font-family: var(--font-display); font-size: 1.15rem; color: #fde68a; }
+      .caption p { margin: 0.25rem 0 0; font-weight: 700; color: #fce7f3; font-size: 0.88rem; }
+      .pill { display: inline-block; margin-bottom: 0.25rem; padding: 0.1rem 0.45rem; border-radius: 999px; background: #fbbf24; color: #78350f; font-size: 0.65rem; font-weight: 800; }
+      @media (max-width: 900px) { .phones { grid-template-columns: 1fr; max-width: 22rem; margin: 0 auto; } }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <p class="board-kicker">contar · Luces — revised: random + to 100</p>
+      <h1>Random board. She picks. Range goes to 100.</h1>
+      <p class="lead">
+        Camino is dead — pads stay scrambled. A 100-button grid is also dead.
+        Each round is a <b>small random window</b> from 1–100. Six fat pads.
+        No yellow spoiler on the answer. Tap → Rumi says the number.
+        Ladder the decades so day one is not the nineties.
+      </p>
+      <div class="phones">
+        <article>
+          <div class="phone phone--pick">
+            <div class="screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/rumi.png" alt="" />
+                  <h2>Contar con Rumi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <p class="meta">Hoy: 67–72 · 2/6</p>
+              <div class="tabs">
+                <div class="tab is-on">Luces</div>
+                <div class="tab">Falta</div>
+              </div>
+              <div class="stage">
+                <p class="now-label">Toca el que sigue</p>
+                <div class="hunt">
+                  <div class="pad">70</div>
+                  <div class="pad is-on">67</div>
+                  <div class="pad">72</div>
+                  <div class="pad">69</div>
+                  <div class="pad is-on">68</div>
+                  <div class="pad">71</div>
+                </div>
+                <p class="wave">🔊 sesenta y ocho</p>
+                <p class="yes">¡Sí! ¿Cuál sigue?</p>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <span class="pill">Keeps Luces · recommended</span>
+            <h3>1. Ventana mezclada</h3>
+            <p>
+              Six consecutive numbers, shuffled. She taps 67 then 68
+              then 69 — she must know the order <b>and</b> find the
+              digits. Next round: another decade. Toward 100 without
+              100 buttons.
+            </p>
+          </div>
+        </article>
+        <article>
+          <div class="phone">
+            <div class="screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/rumi.png" alt="" />
+                  <h2>Contar con Rumi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <p class="meta">Hoy: 1–100 · 3/5</p>
+              <div class="tabs">
+                <div class="tab is-on">Luces</div>
+                <div class="tab">Falta</div>
+              </div>
+              <div class="stage">
+                <p class="now-label">¿Dónde está?</p>
+                <div class="now">74</div>
+                <div class="hunt">
+                  <div class="pad">47</div>
+                  <div class="pad">70</div>
+                  <div class="pad">17</div>
+                  <div class="pad">74</div>
+                  <div class="pad">75</div>
+                  <div class="pad">84</div>
+                </div>
+                <p class="wave">🔊 setenta y cuatro</p>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>2. ¿Dónde está?</h3>
+            <p>
+              Recognition, not sequence. Hear and see <b>74</b>. Find
+              it among lookalikes (47, 70, 17). Best if the real gap
+              is reading two-digit numbers. Five finds, different
+              decades.
+            </p>
+          </div>
+        </article>
+        <article>
+          <div class="phone">
+            <div class="screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/rumi.png" alt="" />
+                  <h2>Contar con Rumi</h2>
+                </div>
+                <div class="stars">⭐ 77</div>
+              </div>
+              <p class="meta">Hoy: 1–100 · 1/5</p>
+              <div class="tabs">
+                <div class="tab is-on">Luces</div>
+                <div class="tab">Falta</div>
+              </div>
+              <div class="stage">
+                <p class="now-label">36 … ¿cuál sigue?</p>
+                <div class="now">?</div>
+                <div class="hunt">
+                  <div class="pad">35</div>
+                  <div class="pad">38</div>
+                  <div class="pad">46</div>
+                  <div class="pad">37</div>
+                  <div class="pad">63</div>
+                  <div class="pad">31</div>
+                </div>
+                <p class="wave">🔊 treinta y seis … ¿y ahora?</p>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>3. ¿Cuál sigue?</h3>
+            <p>
+              One successor per round. Prompt 36, find 37 in the
+              scramble. Same hunt, less memory than tapping six in
+              a row. Harder at decade jumps (39→40, 99→100).
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

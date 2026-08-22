@@ -9,3 +9,4 @@ dist/
 .dev.vars
 *.pem
 client_secret*.json
+/.tmp-shortcut-review/

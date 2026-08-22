@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Club de aprendizaje de Arianna" />
+    <title>Club de Arianna</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./shared/base.css" />
+    <link rel="stylesheet" href="./hub.css" />
+  </head>
+  <body class="hub-body">
+    <div class="hub-bg" aria-hidden="true"></div>
+    <main class="club-shell">
+      <header class="club-top">
+        <h1 class="club-brand">Club de Arianna</h1>
+        <div class="star-pill" id="starPill" aria-live="polite">⭐ 0</div>
+      </header>
+
+      <p class="hub-lead">Elige un juego o escanea un QR.</p>
+
+      <a class="btn btn-primary hub-qr-link" href="./qr/">📷 Misiones QR</a>
+
+      <section aria-label="Juegos">
+        <a class="game-card rumi-card" href="./counting/">
+          <h2>🎤 Contar con Rumi</h2>
+          <p>1, 2, 3… ¡al ritmo del concierto!</p>
+        </a>
+        <a class="game-card skye-card" href="./reading/">
+          <h2>✈️ Volar con Skye</h2>
+          <p>Sílabas fáciles — está empezando a leer.</p>
+        </a>
+        <a class="game-card kuromi-card" href="./english/">
+          <h2>🎀 Club secreto Kuromi</h2>
+          <p>English words — match, memory y spelling.</p>
+        </a>
+      </section>
+
+      <h2 class="section-title">Racha</h2>
+      <p class="streak-line" id="streakLine">Días seguidos: 0</p>
+
+      <h2 class="section-title">Álbum de stickers</h2>
+      <p class="album-progress" id="albumProgress">0 / 8</p>
+      <p class="album-goal" id="albumGoal">Completa misiones para llenar el álbum.</p>
+      <div class="album-favorite" id="albumFavorite" hidden></div>
+      <div class="sticker-grid" id="stickerGrid"></div>
+
+      <h2 class="section-title">Premios</h2>
+      <div id="prizeShelf"></div>
+
+      <p class="hub-back">
+        <a class="btn" href="../">← Volver</a>
+      </p>
+    </main>
+    <script type="module" src="./hub.js"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+.qr-body {
+  background: #fff0f7;
+}
+
+.qr-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 15%, #ffb3d9, transparent 28%),
+    radial-gradient(circle at 80% 80%, #bbf7d0, transparent 30%),
+    linear-gradient(160deg, #fff7fb, #ffe8f3);
+}
+
+.qr-lead {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.qr-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: end;
+  margin-bottom: 1.25rem;
+}
+
+.mission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1rem;
+}
+
+.mission-tile a.open-link {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--pink-deep);
+}
+
+@media print {
+  .mission-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .mission-tile {
+    border-width: 2px;
+  }
+}

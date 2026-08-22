@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kuromi Memory — 3 suggestions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #2e1065;
+        --pink: #f9a8d4;
+        --font-display: "Baloo 2", "Comic Sans MS", cursive;
+        --font-body: "Nunito", "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: #faf5ff;
+        font-family: var(--font-body);
+        background:
+          radial-gradient(circle at 12% 10%, #c4b5fd, transparent 28%),
+          radial-gradient(circle at 90% 80%, #f9a8d4, transparent 30%),
+          linear-gradient(165deg, #1e1b4b 0%, #4c1d95 45%, #831843 100%);
+      }
+
+      .board {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        padding: 1.5rem 1rem 3rem;
+      }
+
+      .board-head {
+        max-width: 42rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .board-kicker {
+        margin: 0 0 0.35rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #e9d5ff;
+      }
+
+      .board-head h1 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+        line-height: 1.05;
+        color: var(--pink);
+      }
+
+      .board-head p {
+        margin: 0.6rem 0 0;
+        color: #fce7f3;
+        font-weight: 700;
+      }
+
+      .phones {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.1rem;
+        align-items: start;
+      }
+
+      .option {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .phone {
+        position: relative;
+        border-radius: 1.6rem;
+        padding: 0.7rem 0.65rem 0.85rem;
+        background: #12081f;
+        border: 3px solid #c4b5fd;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .phone--pick {
+        border-color: #fbbf24;
+        box-shadow:
+          0 0 0 3px rgba(251, 191, 36, 0.35),
+          0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .phone-screen {
+        border-radius: 1.15rem;
+        padding: 0.7rem 0.65rem 0.8rem;
+        background:
+          radial-gradient(circle at 15% 20%, #c4b5fd, transparent 32%),
+          linear-gradient(165deg, #1e1b4b 0%, #4c1d95 50%, #831843 100%);
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-width: 0;
+      }
+
+      .brand img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(244, 114, 182, 0.45));
+      }
+
+      .brand h2 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        line-height: 1.05;
+        color: #f9a8d4;
+      }
+
+      .stars {
+        flex-shrink: 0;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        background: #fff7ed;
+        border: 2px solid #f59e0b;
+        color: #78350f;
+        font-weight: 800;
+        font-size: 0.8rem;
+      }
+
+      .panel {
+        margin-top: 0.55rem;
+        padding: 0.6rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid #c4b5fd;
+      }
+
+      .meta {
+        margin: 0;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #e9d5ff;
+      }
+
+      .prompt {
+        margin: 0.2rem 0 0.45rem;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.82rem;
+        color: #fce7f3;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.35rem;
+      }
+
+      .card {
+        min-height: 72px;
+        border: 0;
+        border-radius: 0.75rem;
+        background: linear-gradient(180deg, #a78bfa, #6d28d9);
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 800;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.15rem;
+      }
+
+      .card.is-open {
+        background: #fff;
+        color: #4c1d95;
+      }
+
+      .card.is-match {
+        background: linear-gradient(180deg, #fde68a, #fff7ed);
+        color: #4c1d95;
+        box-shadow: inset 0 0 0 2px #f59e0b;
+      }
+
+      .card.is-picked {
+        box-shadow: inset 0 0 0 3px #f472b6;
+      }
+
+      .cue {
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        border: 2px solid rgba(46, 16, 101, 0.2);
+      }
+
+      .cue--dark {
+        background: #111827;
+      }
+
+      .cue--red {
+        background: #ef4444;
+      }
+
+      .cue--blue {
+        background: #3b82f6;
+      }
+
+      .word {
+        font-size: 0.78rem;
+        line-height: 1;
+      }
+
+      .badge {
+        font-family: var(--font-body);
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        padding: 0.05rem 0.28rem;
+        border-radius: 999px;
+        background: #ede9fe;
+        color: #6d28d9;
+      }
+
+      .speak {
+        font-size: 0.7rem;
+      }
+
+      .feedback {
+        margin: 0.45rem 0 0;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        color: #fce7f3;
+      }
+
+      .couple {
+        margin: 0.35rem 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.28rem 0.45rem;
+        border-radius: 999px;
+        background: #fff7ed;
+        color: #78350f;
+        font-weight: 800;
+        font-size: 0.72rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.35rem;
+        margin-top: 0.5rem;
+      }
+
+      .btn {
+        padding: 0.22rem 0.5rem;
+        border-radius: 0.45rem;
+        background: #fff;
+        color: #4c1d95;
+        font-weight: 800;
+        font-size: 0.68rem;
+      }
+
+      .lane-label {
+        margin: 0 0 0.2rem;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #fbcfe8;
+      }
+
+      .lane {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.35rem;
+        margin-bottom: 0.4rem;
+      }
+
+      .caption {
+        padding: 0 0.15rem;
+      }
+
+      .caption h3 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        color: #fde68a;
+      }
+
+      .caption p {
+        margin: 0.25rem 0 0;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #fce7f3;
+      }
+
+      .pill {
+        display: inline-block;
+        margin-bottom: 0.25rem;
+        padding: 0.1rem 0.45rem;
+        border-radius: 999px;
+        background: #fbbf24;
+        color: #78350f;
+        font-size: 0.65rem;
+        font-weight: 800;
+      }
+
+      .combo {
+        display: grid;
+        grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+        gap: 1.25rem;
+        align-items: center;
+        margin: 0 0 2rem;
+        padding: 1rem;
+        border-radius: 1.4rem;
+        background: rgba(18, 8, 31, 0.45);
+        border: 2px solid #fbbf24;
+      }
+
+      .combo-copy h2 {
+        margin: 0.2rem 0 0;
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 4vw, 2.1rem);
+        color: #fde68a;
+        line-height: 1.1;
+      }
+
+      .combo-copy ul {
+        margin: 0.7rem 0 0;
+        padding-left: 1.1rem;
+        font-weight: 700;
+        color: #fce7f3;
+      }
+
+      .combo-copy li + li {
+        margin-top: 0.35rem;
+      }
+
+      .wave {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        margin: 0.4rem 0 0;
+        padding: 0.35rem 0.5rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        font-weight: 800;
+        font-size: 0.78rem;
+        color: #fff7ed;
+      }
+
+      .wave b {
+        color: #fde68a;
+      }
+
+      @media (max-width: 900px) {
+        .phones {
+          grid-template-columns: 1fr;
+          max-width: 22rem;
+          margin: 0 auto;
+        }
+
+        .combo {
+          grid-template-columns: 1fr;
+          max-width: 22rem;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board">
+      <header class="board-head">
+        <p class="board-kicker">Club secreto Kuromi · colors memory</p>
+        <h1>3 ways she can still learn inglés ↔ español</h1>
+        <p>
+          Same 6 cards. Same word pair. The difference is how a beginner
+          finds the match.
+        </p>
+      </header>
+
+      <section class="combo">
+        <div class="phone phone--pick">
+          <div class="phone-screen">
+            <div class="top">
+              <div class="brand">
+                <img src="../public/kuromi.png" alt="" />
+                <h2>Club secreto Kuromi</h2>
+              </div>
+              <div class="stars">⭐ 36</div>
+            </div>
+            <div class="panel">
+              <p class="meta">colors · Memory</p>
+              <p class="prompt">Inglés ↔ español</p>
+              <div class="grid">
+                <div class="card is-match">
+                  <span class="cue cue--dark"></span>
+                  <span class="word">oscuro</span>
+                </div>
+                <div class="card">?</div>
+                <div class="card is-open">
+                  <span class="cue cue--red"></span>
+                  <span class="word">rojo</span>
+                </div>
+                <div class="card">?</div>
+                <div class="card is-match">
+                  <span class="cue cue--dark"></span>
+                  <span class="word">dark</span>
+                </div>
+                <div class="card">?</div>
+              </div>
+              <div class="couple">oscuro = dark</div>
+              <div class="wave">🔊 <b>oscuro</b> … <b>dark</b></div>
+              <div class="actions">
+                <span class="btn">← Modos</span>
+                <span class="btn">QR</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="combo-copy">
+          <span class="pill">Build this</span>
+          <h2>1 + speak</h2>
+          <ul>
+            <li>Same color chip on both cards. She matches what she sees.</li>
+            <li>Both words stay. After a hit they lock as <b>oscuro = dark</b>.</li>
+            <li>The whole card speaks — no tiny 🔊 to hunt.</li>
+            <li>Flip = that language. Match = Spanish first, then English.</li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="phones">
+        <article class="option">
+          <div class="phone phone--pick">
+            <div class="phone-screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 36</div>
+              </div>
+              <div class="panel">
+                <p class="meta">colors · Memory</p>
+                <p class="prompt">Inglés ↔ español</p>
+                <div class="grid">
+                  <div class="card is-match">
+                    <span class="cue cue--dark"></span>
+                    <span class="word">oscuro</span>
+                  </div>
+                  <div class="card">?</div>
+                  <div class="card is-open">
+                    <span class="cue cue--red"></span>
+                    <span class="word">rojo</span>
+                  </div>
+                  <div class="card">?</div>
+                  <div class="card is-match">
+                    <span class="cue cue--dark"></span>
+                    <span class="word">dark</span>
+                  </div>
+                  <div class="card">?</div>
+                </div>
+                <div class="couple">oscuro = dark</div>
+                <p class="feedback">¡Match! She saw the same dark circle.</p>
+                <div class="actions">
+                  <span class="btn">← Modos</span>
+                  <span class="btn">QR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <span class="pill">Recommended</span>
+            <h3>1. Same picture, two words</h3>
+            <p>
+              Both cards keep EN and ES. Both share a color chip. She matches
+              what she sees, then the words lock as a couple.
+            </p>
+          </div>
+        </article>
+
+        <article class="option">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 36</div>
+              </div>
+              <div class="panel">
+                <p class="meta">colors · Memory</p>
+                <p class="prompt">Escucha · inglés ↔ español</p>
+                <div class="grid">
+                  <div class="card is-match">
+                    <span class="badge">ES</span>
+                    <span class="word">oscuro</span>
+                    <span class="speak">🔊</span>
+                  </div>
+                  <div class="card">?</div>
+                  <div class="card">?</div>
+                  <div class="card">?</div>
+                  <div class="card is-match">
+                    <span class="badge">EN</span>
+                    <span class="word">dark</span>
+                    <span class="speak">🔊</span>
+                  </div>
+                  <div class="card">?</div>
+                </div>
+                <p class="feedback">🔊 oscuro … dark</p>
+                <div class="actions">
+                  <span class="btn">← Modos</span>
+                  <span class="btn">QR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>2. Hear the pair</h3>
+            <p>
+              Cards stay text. EN / ES badges. Tap speaks that language. A
+              match plays both words back-to-back.
+            </p>
+          </div>
+        </article>
+
+        <article class="option">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="top">
+                <div class="brand">
+                  <img src="../public/kuromi.png" alt="" />
+                  <h2>Club secreto Kuromi</h2>
+                </div>
+                <div class="stars">⭐ 36</div>
+              </div>
+              <div class="panel">
+                <p class="meta">colors · Memory</p>
+                <p class="prompt">Elige el español, luego el inglés</p>
+                <p class="lane-label">Tú lo dices</p>
+                <div class="lane">
+                  <div class="card is-open is-picked">
+                    <span class="cue cue--dark"></span>
+                    <span class="word">oscuro</span>
+                  </div>
+                  <div class="card is-open">
+                    <span class="cue cue--red"></span>
+                    <span class="word">rojo</span>
+                  </div>
+                  <div class="card is-open">
+                    <span class="cue cue--blue"></span>
+                    <span class="word">azul</span>
+                  </div>
+                </div>
+                <p class="lane-label">En inglés</p>
+                <div class="lane">
+                  <div class="card">?</div>
+                  <div class="card is-match">
+                    <span class="word">dark</span>
+                  </div>
+                  <div class="card">?</div>
+                </div>
+                <p class="feedback">¡Yes! oscuro = dark</p>
+                <div class="actions">
+                  <span class="btn">← Modos</span>
+                  <span class="btn">QR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="caption">
+            <h3>3. Two lanes</h3>
+            <p>
+              Spanish + picture on top. English hiding below. She uses the
+              language she knows as the anchor.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </body>
+</html>

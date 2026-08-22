@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+const skyeIconUrl = `${import.meta.env.BASE_URL}skye.svg`;
+---
+<Layout title="Volar con Skye">
+  <main class="skye-shell">
+    <header class="skye-top">
+      <div class="skye-brand">
+        <img
+          class="skye-icon"
+          src={skyeIconUrl}
+          alt="Skye"
+          width="140"
+          height="140"
+        />
+        <h1 class="skye-title">Volar con Skye</h1>
+      </div>
+      <div class="star-pill" id="starPill">⭐ 0</div>
+    </header>
+    <section class="skye-panel" id="gameRoot" aria-live="polite"></section>
+    <div class="skye-actions">
+      <a class="btn" href="./" id="returnNavButton" hidden>← Modos</a>
+      <a class="btn" href="/games/" id="clubNavButton" hidden>← Club</a>
+    </div>
+  </main>
+  <script>
+    import { mountReadingGame } from "../islands/reading-game.js";
+    mountReadingGame(document.getElementById("gameRoot"));
+  </script>
+</Layout>

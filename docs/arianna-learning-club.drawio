@@ -1,0 +1,202 @@
+<mxfile host="app.diagrams.net" agent="Cursor" version="24.7.17" type="device">
+  <diagram id="arianna-learning-club" name="Arianna Learning Club">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Arianna Learning Club — architecture" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=20;fontColor=#5A1640;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="520" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="JS only · React / Astro / Vue · QR board + printable · green when done · iPhone X" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontColor=#8A3A68;" vertex="1" parent="1">
+          <mxGeometry x="40" y="52" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Entry: QR surfaces -->
+        <mxCell id="swim-entry" value="Entry" style="swimlane;horizontal=0;startSize=28;fillColor=#FFF0F7;strokeColor=#FF4FA3;fontColor=#5A1640;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="200" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="qr-board" value="QR landing page&#10;/games/qr/&#10;&#10;Grid of mission QRs&#10;Green + ✓ when done&#10;Print button" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FF4FA3;strokeWidth=2;fontColor=#5A1640;align=center;" vertex="1" parent="swim-entry">
+          <mxGeometry x="48" y="40" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="print-sheet" value="Printable cards&#10;&#10;Same missions&#10;Paper launch sheet&#10;(no live green)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFB3D9;fontColor=#5A1640;align=center;" vertex="1" parent="swim-entry">
+          <mxGeometry x="48" y="180" width="140" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Phone -->
+        <mxCell id="swim-phone" value="Device" style="swimlane;horizontal=0;startSize=28;fillColor=#E8F4FF;strokeColor=#3B82F6;fontColor=#1E3A5F;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="180" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="iphone" value="iPhone X&#10;Camera / Safari&#10;&#10;Scan QR → open&#10;absolute URL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3B82F6;strokeWidth=2;fontColor=#1E3A5F;align=center;" vertex="1" parent="swim-phone">
+          <mxGeometry x="40" y="90" width="120" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Absolute URLs -->
+        <mxCell id="urls" value="https://arianna.morjan.family/games/…&#10;?mission=&lt;id&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#78350F;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="500" y="210" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Three games -->
+        <mxCell id="swim-games" value="Games (each under apps/arianna/games/)" style="swimlane;startSize=32;fillColor=#F8FAFC;strokeColor=#64748B;fontColor=#0F172A;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="100" width="720" height="320" as="geometry" />
+        </mxCell>
+
+        <mxCell id="game-rumi" value="Contar con Rumi&#10;&#10;React + Vite (JS)&#10;/games/counting/&#10;&#10;Sequences 1, 2, 3 → 100&#10;Light path · missing # · rhythm&#10;Encore bonus" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF2F8;strokeColor=#DB2777;strokeWidth=2;fontColor=#831843;align=center;verticalAlign=top;spacingTop=8;" vertex="1" parent="swim-games">
+          <mxGeometry x="24" y="48" width="210" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="badge-react" value="React" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DB2777;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=11;" vertex="1" parent="swim-games">
+          <mxGeometry x="160" y="56" width="60" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="game-skye" value="Volar con Skye&#10;&#10;Astro (JS)&#10;/games/reading/&#10;&#10;Spanish reading ladder&#10;Syllables · words · sentences&#10;Content-first islands" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF2F8;strokeColor=#EC4899;strokeWidth=2;fontColor=#831843;align=center;verticalAlign=top;spacingTop=8;" vertex="1" parent="swim-games">
+          <mxGeometry x="254" y="48" width="210" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="badge-astro" value="Astro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF5D01;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=11;" vertex="1" parent="swim-games">
+          <mxGeometry x="390" y="56" width="60" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="game-kuromi" value="Club secreto Kuromi&#10;&#10;Vue + Vite (JS)&#10;/games/english/&#10;&#10;English vocab 6–7&#10;Match · memory · spelling&#10;Spaced review" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E8FF;strokeColor=#7C3AED;strokeWidth=2;fontColor=#4C1D95;align=center;verticalAlign=top;spacingTop=8;" vertex="1" parent="swim-games">
+          <mxGeometry x="484" y="48" width="210" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="badge-vue" value="Vue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#42B883;strokeColor=none;fontColor=#FFFFFF;fontStyle=1;fontSize=11;" vertex="1" parent="swim-games">
+          <mxGeometry x="620" y="56" width="60" height="22" as="geometry" />
+        </mxCell>
+
+        <!-- Shared engine -->
+        <mxCell id="swim-shared" value="Shared engine — apps/arianna/games/shared/ (plain JS)" style="swimlane;startSize=32;fillColor=#ECFDF5;strokeColor=#059669;fontColor=#064E3B;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="900" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-missions" value="missions.js&#10;&#10;Canonical mission list&#10;id · label · path · query&#10;Used by QR board + games" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#059669;fontColor=#064E3B;align=center;" vertex="1" parent="swim-shared">
+          <mxGeometry x="24" y="48" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-progress" value="progress.js&#10;&#10;Stars · stickers · streak&#10;Mastery scores&#10;missions[id].done → green" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#059669;strokeWidth=2;fontColor=#064E3B;align=center;" vertex="1" parent="swim-shared">
+          <mxGeometry x="244" y="48" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-prizes" value="prizes.js&#10;&#10;Starter catalog&#10;(redefine later)&#10;Hold-to-confirm redeem" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#059669;fontColor=#064E3B;align=center;" vertex="1" parent="swim-shared">
+          <mxGeometry x="464" y="48" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="mod-celebrate" value="celebrate.js + base.css&#10;&#10;Confetti / stars&#10;Kid-UX tokens&#10;.mission-tile--done" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#059669;fontColor=#064E3B;align=center;" vertex="1" parent="swim-shared">
+          <mxGeometry x="684" y="48" width="190" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Rewards / club hub -->
+        <mxCell id="swim-hub" value="Club hub /games/" style="swimlane;startSize=32;fillColor=#FFF7ED;strokeColor=#EA580C;fontColor=#7C2D12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="460" width="480" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hub-wallet" value="Star wallet&#10;Sticker album&#10;Prize shelf&#10;Daily streak&#10;Link → QR board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#EA580C;strokeWidth=2;fontColor=#7C2D12;align=center;" vertex="1" parent="swim-hub">
+          <mxGeometry x="40" y="50" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="hub-done" value="Done feedback&#10;&#10;Tile GREEN + check&#10;Same origin / phone&#10;localStorage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBF7D0;strokeColor=#16A34A;strokeWidth=2;fontColor=#14532D;align=center;fontStyle=1;" vertex="1" parent="swim-hub">
+          <mxGeometry x="260" y="50" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Deploy note -->
+        <mxCell id="deploy" value="Deploy: arianna.morjan.family (Cloudflare Pages) · keep / and /confetti.html · build React + Astro + Vue into /games/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#64748B;fontColor=#334155;align=left;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="1420" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend: pink = Rumi/Skye themes · purple = Kuromi · green shared/progress · amber = deep-link URL · green tile = mission completed" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;fontColor=#64748B;" vertex="1" parent="1">
+          <mxGeometry x="40" y="750" width="900" height="24" as="geometry" />
+        </mxCell>
+
+        <!-- Edges: Entry → Phone -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF4FA3;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="qr-board" target="iphone">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1l" value="open / scan" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#BE185D;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FFB3D9;strokeWidth=1;dashed=1;endArrow=block;endFill=1;" edge="1" parent="1" source="print-sheet" target="iphone">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Phone → URL -->
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3B82F6;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="iphone" target="urls">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- URL → games -->
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D97706;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="urls" target="game-rumi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D97706;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="urls" target="game-skye">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D97706;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="urls" target="game-kuromi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Games → progress (markMissionDone) -->
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#059669;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="game-rumi" target="mod-progress">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="440" />
+              <mxPoint x="384" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#059669;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="game-skye" target="mod-progress">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1100" y="440" />
+              <mxPoint x="384" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#059669;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="game-kuromi" target="mod-progress">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1330" y="440" />
+              <mxPoint x="384" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9l" value="markMissionDone" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#047857;labelBackgroundColor=#FFFFFF;fontStyle=1;" vertex="1" connectable="0" parent="e8">
+          <mxGeometry x="-0.2" y="1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Progress → green tile feedback -->
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=block;endFill=1;dashed=0;" edge="1" parent="1" source="mod-progress" target="hub-done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#16A34A;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="hub-done" target="qr-board">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1330" y="700" />
+              <mxPoint x="20" y="700" />
+              <mxPoint x="20" y="200" />
+              <mxPoint x="110" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11l" value="tile turns green" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#15803D;labelBackgroundColor=#FFFFFF;fontStyle=1;" vertex="1" connectable="0" parent="e11">
+          <mxGeometry x="-0.05" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- Progress → hub wallet (stars) -->
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA580C;strokeWidth=1;endArrow=block;endFill=1;" edge="1" parent="1" source="mod-progress" target="hub-wallet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12l" value="stars" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#C2410C;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="e12">
+          <mxGeometry x="-0.1" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- missions.js feeds QR board -->
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#059669;strokeWidth=1;dashed=1;endArrow=block;endFill=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="mod-missions" target="qr-board">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="80" y="560" />
+              <mxPoint x="80" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13l" value="mission catalog" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=9;fontColor=#047857;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="e13">
+          <mxGeometry x="-0.2" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

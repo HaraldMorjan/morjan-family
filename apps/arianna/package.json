@@ -1,0 +1,18 @@
+{
+  "name": "arianna-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "install:games": "npm install --prefix games/counting && npm install --prefix games/reading && npm install --prefix games/english",
+    "build:counting": "npm run build --prefix games/counting",
+    "build:reading": "npm run build --prefix games/reading",
+    "build:english": "npm run build --prefix games/english",
+    "build:games": "npm run build:counting && npm run build:reading && npm run build:english",
+    "build": "node scripts/build-site.mjs",
+    "test": "node --test games/shared/*.test.mjs",
+    "dev:counting": "npm run dev --prefix games/counting",
+    "dev:reading": "npm run dev --prefix games/reading",
+    "dev:english": "npm run dev --prefix games/english"
+  }
+}

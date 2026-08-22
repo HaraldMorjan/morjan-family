@@ -98,27 +98,53 @@ curl https://api.morjan.family/health
 curl https://api.morjan.family/trips
 ```
 
+## Catalog routes
+
+| Method | Path | Auth | Purpose |
+| --- | --- | --- | --- |
+| GET | `/trips` | no | List trips |
+| POST | `/trips` | token | JSON `{ "title" }` → create trip + Drive folder |
+| GET | `/trips/:tripId/albums` | no | List Drive albums for a trip |
+| POST | `/trips/:tripId/albums` | token | JSON `{ "name" }` → create album + Drive folder |
+| GET | `/trips/:tripId/photos` | no | List photos (`?album=<slug>` optional) |
+| POST | `/trips/:tripId/photos` | token | Upload photo |
+
 ## Upload (`POST /trips/:tripId/photos`)
 
 Requires header `X-Upload-Token: <UPLOAD_TOKEN>` and `multipart/form-data` with a
-file field named `file`, `photo`, or `image`.
+file field named `file`, `photo`, or `image`. Optional text field `album` (pretty name or
+slug; defaults to `Unsorted`).
 
 Pipeline order (locked):
 
 1. Validate token + trip id + type + size (max 25 MB)
-2. Auto-create a minimal D1 `trips` row if missing (titles seeded later)
-3. Upload **original** to Google Drive `media/<trip-id>/` (must succeed)
+2. Auto-create D1 `trips` / `albums` rows if missing
+3. Upload **original** to Google Drive `trips/<trip-id>/<album-slug>/` (must succeed)
 4. Resize via Images binding (max edge 2048, JPEG q80) — falls back to original bytes if resize fails
-5. Put web copy on R2 → `https://media.morjan.family/<trip-id>/...`
-6. Insert `trip_photos` row; set trip `cover_url` if empty
-7. Return `{ ok, photoId, mediaUrl, driveFileId, driveConfirmed, safeToMoveOffPhone }`
+5. Put web copy on R2 → `https://media.morjan.family/<trip-id>/<album-slug>/...`
+6. Insert `trip_photos` row (with `album_id`); set trip `cover_url` if empty
+7. Return `{ ok, photoId, mediaUrl, album, albumSlug, driveFileId, driveConfirmed, safeToMoveOffPhone }`
 
 Smoke (replace token; use a small JPEG):
 
 ```bash
-curl -sS -X POST "https://api.morjan.family/trips/guatemala-highlands-2024/photos" \
+# Create trip
+curl -sS -X POST "https://api.morjan.family/trips" \
   -H "X-Upload-Token: $UPLOAD_TOKEN" \
-  -F "file=@./sample.jpg;type=image/jpeg"
+  -H "content-type: application/json" \
+  -d '{"title":"Costa Rica 2026"}'
+
+# Create album
+curl -sS -X POST "https://api.morjan.family/trips/costa-rica-2026/albums" \
+  -H "X-Upload-Token: $UPLOAD_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"name":"Beach"}'
+
+# Upload into album
+curl -sS -X POST "https://api.morjan.family/trips/costa-rica-2026/photos" \
+  -H "X-Upload-Token: $UPLOAD_TOKEN" \
+  -F "file=@./sample.jpg;type=image/jpeg" \
+  -F "album=Beach"
 ```
 
 Unauthorized without token returns `401`. Missing pipeline pieces return `502` with detail

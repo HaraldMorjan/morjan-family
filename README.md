@@ -8,7 +8,7 @@ Each app under `apps/` is independent (own Pages project + custom domain).
 | Folder | Theme | Domain(s) |
 | --- | --- | --- |
 | `apps/hub` | Family hub | `morjan.family`, `www.morjan.family` |
-| `apps/arianna` | Pink + QR codes (age 5) | `arianna.morjan.family` |
+| `apps/arianna` | Pink + QR codes + Learning Club (age 5) | `arianna.morjan.family` |
 | `apps/helen` | Violet mechatronics student | `helen.morjan.family` |
 | `apps/harald` | Green software developer | `harald.morjan.family` |
 | `apps/katy` | Proud tech mom (warm coral) | `katy.morjan.family` |
@@ -17,9 +17,24 @@ Each app under `apps/` is independent (own Pages project + custom domain).
 
 ## Local preview
 
+Static sites (no build):
+
 ```bash
 npx --yes serve apps/arianna
 ```
+
+**Arianna Learning Club** (React / Astro / Vue games) needs a build:
+
+```bash
+cd apps/arianna
+npm run build
+npx --yes serve dist
+```
+
+Parent guide: [`apps/arianna/games/README.md`](apps/arianna/games/README.md).  
+Architecture diagram: [`docs/arianna-learning-club.drawio`](docs/arianna-learning-club.drawio).
+
+Cloudflare Pages for Arianna: build command `npm run build`, output directory `dist`, root `apps/arianna`.
 
 ## Trips content & photo storage (R2)
 
@@ -28,7 +43,7 @@ npx --yes serve apps/arianna
 | Layer | Where | Purpose |
 | --- | --- | --- |
 | Originals | Google Drive / external SSD | True backup (full quality) |
-| Web copies | R2 bucket `morjan-trips` → `https://media.morjan.family` | Gallery delivery |
+| Web copies | R2 bucket `morjan-trips` → `https://media.morjan.family/<trip>/<album>/…` | Gallery delivery |
 | Catalog | `apps/trips/data.js` | Metadata + URLs only |
 
 ### One-time setup
@@ -61,8 +76,11 @@ Tiny placeholders may stay in `apps/trips/img/`. Real albums go to R2.
 
 Click a trip card (or **View gallery**) to open the lightbox.
 
-**Later:** phone upload → Google Drive (original) + R2 (web) + gallery — see [`docs/trips-phone-upload-plan.md`](docs/trips-phone-upload-plan.md).  
-API Worker scaffold: [`apps/api/README.md`](apps/api/README.md).
+**Phone upload (feature #1):** Google Drive `trips/<trip>/<album>/` original + R2 web copy +
+gallery — see [`docs/trips-phone-upload-plan.md`](docs/trips-phone-upload-plan.md).  
+**iOS Shortcut build guide:** [`docs/ios-shortcut-morjan-trips.md`](docs/ios-shortcut-morjan-trips.md)
+(live trip + album pickers).  
+API Worker: [`apps/api/README.md`](apps/api/README.md).
 
 **Vision & roadmap:** where the family universe is headed (hub, trips, auth, new products) — see [`docs/roadmap.md`](docs/roadmap.md).
 
