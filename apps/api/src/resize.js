@@ -7,6 +7,14 @@
 const MAX_EDGE_PIXELS = 2048;
 const OUTPUT_QUALITY = 80;
 
+const streamFromBytes = (bytes) =>
+  new ReadableStream({
+    start(controller) {
+      controller.enqueue(new Uint8Array(bytes));
+      controller.close();
+    }
+  });
+
 export const createWebCopy = async (environment, originalBytes, contentType) => {
   if (!environment.IMAGES) {
     return {
@@ -25,7 +33,9 @@ export const createWebCopy = async (environment, originalBytes, contentType) => 
     let height = null;
 
     try {
-      const imageInfo = await environment.IMAGES.info(originalBytes);
+      const imageInfo = await environment.IMAGES.info(
+        streamFromBytes(originalBytes)
+      );
       width = imageInfo.width ?? null;
       height = imageInfo.height ?? null;
     } catch (infoError) {
@@ -34,7 +44,9 @@ export const createWebCopy = async (environment, originalBytes, contentType) => 
       height = null;
     }
 
-    const transformed = await environment.IMAGES.input(originalBytes)
+    const transformed = await environment.IMAGES.input(
+      streamFromBytes(originalBytes)
+    )
       .transform({
         width: MAX_EDGE_PIXELS,
         height: MAX_EDGE_PIXELS,
