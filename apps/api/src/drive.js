@@ -170,24 +170,60 @@ export const ensureTripFolder = async (
 
   let rootFolderId = environment.GOOGLE_DRIVE_ROOT_FOLDER_ID || null;
 
-  if (!rootFolderId) {
-    rootFolderId = await findFolderByName(accessToken, "trips", null);
+  if (rootFolderId) {
+    let tripFolderId = await findFolderByName(
+      accessToken,
+      tripId,
+      rootFolderId
+    );
+
+    if (!tripFolderId) {
+      tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
+    }
+
+    return { rootFolderId, tripFolderId };
   }
 
-  if (!rootFolderId) {
-    // Legacy fallback: older installs used "media" as the root folder name.
-    rootFolderId = await findFolderByName(accessToken, "media", null);
+  const tripsRootFolderId = await findFolderByName(
+    accessToken,
+    "trips",
+    null
+  );
+  if (tripsRootFolderId) {
+    const tripFolderId = await findFolderByName(
+      accessToken,
+      tripId,
+      tripsRootFolderId
+    );
+    if (tripFolderId) {
+      return { rootFolderId: tripsRootFolderId, tripFolderId };
+    }
   }
 
-  if (!rootFolderId) {
-    rootFolderId = await createFolder(accessToken, "trips", null);
+  // Existing installs stored originals below media/. If both roots exist,
+  // reuse the root that already contains this trip instead of splitting it.
+  const mediaRootFolderId = await findFolderByName(
+    accessToken,
+    "media",
+    null
+  );
+  if (mediaRootFolderId) {
+    const tripFolderId = await findFolderByName(
+      accessToken,
+      tripId,
+      mediaRootFolderId
+    );
+    if (tripFolderId) {
+      return { rootFolderId: mediaRootFolderId, tripFolderId };
+    }
   }
 
-  let tripFolderId = await findFolderByName(accessToken, tripId, rootFolderId);
+  rootFolderId =
+    tripsRootFolderId ||
+    mediaRootFolderId ||
+    (await createFolder(accessToken, "trips", null));
 
-  if (!tripFolderId) {
-    tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
-  }
+  const tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
 
   return { rootFolderId, tripFolderId };
 };
