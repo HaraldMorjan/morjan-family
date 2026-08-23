@@ -177,10 +177,37 @@ export const ensureTripFolder = async (
       rootFolderId
     );
 
-    if (!tripFolderId) {
-      tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
+    if (tripFolderId) {
+      return { rootFolderId, tripFolderId };
     }
 
+    // A configured root may have been added after originals were already
+    // stored below a legacy top-level trips/ or media/ tree. Reuse the
+    // existing trip before creating a split backup tree.
+    for (const legacyRootName of ["trips", "media"]) {
+      const legacyRootFolderId = await findFolderByName(
+        accessToken,
+        legacyRootName,
+        null
+      );
+      if (!legacyRootFolderId || legacyRootFolderId === rootFolderId) {
+        continue;
+      }
+
+      tripFolderId = await findFolderByName(
+        accessToken,
+        tripId,
+        legacyRootFolderId
+      );
+      if (tripFolderId) {
+        return {
+          rootFolderId: legacyRootFolderId,
+          tripFolderId
+        };
+      }
+    }
+
+    tripFolderId = await createFolder(accessToken, tripId, rootFolderId);
     return { rootFolderId, tripFolderId };
   }
 
