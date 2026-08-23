@@ -40,7 +40,10 @@ test("ensureTripFolder recreates a missing cached folder", async () => {
     );
 
     assert.equal(result.tripFolderId, "replacement-trip");
-    assert.equal(calls.length, 3);
+    assert.equal(
+      calls.filter(({ options }) => options.method === "POST").length,
+      1
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }

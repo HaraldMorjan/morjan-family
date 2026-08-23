@@ -10,6 +10,38 @@ test("canonicalizeTripId normalizes mixed-case identifiers", () => {
   );
 });
 
+test("album routes query and return the canonical trip identifier", async () => {
+  let boundTripId;
+  const environment = {
+    DB: {
+      prepare() {
+        return {
+          bind(tripId) {
+            boundTripId = tripId;
+            return {
+              async all() {
+                return { results: [] };
+              }
+            };
+          }
+        };
+      }
+    }
+  };
+
+  const response = await worker.fetch(
+    new Request(
+      "https://api.morjan.family/trips/Guatemala-Highlands-2024/albums"
+    ),
+    environment
+  );
+  const payload = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(boundTripId, "guatemala-highlands-2024");
+  assert.equal(payload.tripId, "guatemala-highlands-2024");
+});
+
 test("photo routes query and return the canonical trip identifier", async () => {
   let boundTripId;
   const environment = {

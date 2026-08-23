@@ -448,7 +448,9 @@ const handleRequest = async (request, environment) => {
 
   const tripAlbumsMatch = pathName.match(/^\/trips\/([^/]+)\/albums$/);
   if (tripAlbumsMatch) {
-    const tripId = decodeURIComponent(tripAlbumsMatch[1]);
+    const tripId = canonicalizeTripId(
+      decodeURIComponent(tripAlbumsMatch[1])
+    );
 
     if (request.method === "GET") {
       try {
