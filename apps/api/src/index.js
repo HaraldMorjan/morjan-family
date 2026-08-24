@@ -234,17 +234,14 @@ export const createTrip = async (environment, title) => {
       accessToken,
       tripId,
       environment,
-      null
+      tripRow.driveFolderId
     );
-    await environment.DB.prepare(
-      `
-      UPDATE trips
-      SET drive_folder_id = ?
-      WHERE id = ?
-      `
-    )
-      .bind(folders.tripFolderId, tripId)
-      .run();
+    const tripFolderId = await cacheTripFolderId(
+      environment,
+      tripId,
+      folders.tripFolderId,
+      tripRow.driveFolderId
+    );
 
     return {
       statusCode: tripRow.created ? 201 : 200,
@@ -253,7 +250,7 @@ export const createTrip = async (environment, title) => {
         trip: {
           id: tripId,
           title: tripRow.title,
-          driveFolderId: folders.tripFolderId
+          driveFolderId: tripFolderId
         }
       }
     };
