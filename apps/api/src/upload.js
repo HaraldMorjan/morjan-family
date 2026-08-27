@@ -122,20 +122,31 @@ export const ensureTripRow = async (environment, tripId, title = null) => {
   const tripTitle =
     typeof title === "string" && title.trim() ? title.trim().slice(0, 120) : tripId;
 
-  await environment.DB.prepare(
+  const insertResult = await environment.DB.prepare(
     `
     INSERT INTO trips (id, title, place, dates, blurb, cover_url, created_at, drive_folder_id)
     VALUES (?, ?, NULL, NULL, NULL, NULL, ?, NULL)
+    ON CONFLICT (id) DO NOTHING
     `
   )
     .bind(tripId, tripTitle, createdAt)
     .run();
 
+  const savedTrip = await environment.DB.prepare(
+    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
+  )
+    .bind(tripId)
+    .first();
+
+  if (!savedTrip) {
+    throw new Error("Trip insert completed without a readable row.");
+  }
+
   return {
-    created: true,
-    tripId,
-    title: tripTitle,
-    driveFolderId: null
+    created: insertResult.meta?.changes === 1,
+    tripId: savedTrip.id,
+    title: savedTrip.title,
+    driveFolderId: savedTrip.driveFolderId || null
   };
 };
 

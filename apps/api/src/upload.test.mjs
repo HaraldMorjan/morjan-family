@@ -3,8 +3,51 @@ import test from "node:test";
 
 import {
   cacheAlbumFolderId,
-  ensureAlbumRow
+  ensureAlbumRow,
+  ensureTripRow
 } from "./upload.js";
+
+test("ensureTripRow tolerates a concurrent insert for the same id", async () => {
+  let selectCount = 0;
+  let insertSql = "";
+
+  const winningTrip = {
+    id: "summer-trip",
+    title: "summer-trip",
+    driveFolderId: "trip-folder"
+  };
+
+  const environment = {
+    DB: {
+      prepare(sql) {
+        return {
+          bind() {
+            return {
+              async first() {
+                selectCount += 1;
+                return selectCount === 1 ? null : winningTrip;
+              },
+              async run() {
+                insertSql = sql;
+                return { success: true, meta: { changes: 0 } };
+              }
+            };
+          }
+        };
+      }
+    }
+  };
+
+  const result = await ensureTripRow(environment, "summer-trip");
+
+  assert.match(insertSql, /ON CONFLICT \(id\) DO NOTHING/);
+  assert.deepEqual(result, {
+    created: false,
+    tripId: "summer-trip",
+    title: "summer-trip",
+    driveFolderId: "trip-folder"
+  });
+});
 
 test("ensureAlbumRow tolerates a concurrent insert for the same slug", async () => {
   let selectCount = 0;
