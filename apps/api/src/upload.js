@@ -104,7 +104,7 @@ const pickAlbumName = (formData) => {
 
 export const ensureTripRow = async (environment, tripId, title = null) => {
   const existingTrip = await environment.DB.prepare(
-    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
+    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ? COLLATE NOCASE"
   )
     .bind(tripId)
     .first();
@@ -411,7 +411,8 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
 
   const albumName = pickAlbumName(formData);
   const tripRow = await ensureTripRow(environment, tripId);
-  const albumRow = await ensureAlbumRow(environment, tripId, albumName);
+  const storageTripId = tripRow.tripId;
+  const albumRow = await ensureAlbumRow(environment, storageTripId, albumName);
 
   const photoId = crypto.randomUUID();
   const createdAt = new Date().toISOString();
@@ -446,7 +447,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   try {
     const folders = await ensureTripFolder(
       accessToken,
-      tripId,
+      storageTripId,
       environment,
       tripRow.driveFolderId
     );
@@ -454,7 +455,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
     if (tripRow.driveFolderId !== tripFolderId) {
       tripFolderId = await cacheTripFolderId(
         environment,
-        tripId,
+        storageTripId,
         tripFolderId,
         tripRow.driveFolderId
       );
@@ -505,7 +506,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   }
 
   const webCopy = await createWebCopy(environment, originalBytes, contentType);
-  const r2Key = `${tripId}/${albumRow.slug}/${stamp}-${photoId}.${webCopy.extension}`;
+  const r2Key = `${storageTripId}/${albumRow.slug}/${stamp}-${photoId}.${webCopy.extension}`;
   const mediaBase = (
     environment.MEDIA_PUBLIC_BASE || "https://media.morjan.family"
   ).replace(/\/+$/, "");
@@ -527,7 +528,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
   try {
     await insertPhotoRow(environment, {
       id: photoId,
-      tripId,
+      tripId: storageTripId,
       albumId: albumRow.albumId,
       r2Key,
       mediaUrl,

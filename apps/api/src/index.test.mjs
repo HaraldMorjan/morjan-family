@@ -15,7 +15,7 @@ test("createTrip resumes a row left incomplete by Drive failure", async () => {
   const updates = [];
 
   const incompleteTrip = {
-    id: "summer-trip",
+    id: "Summer-Trip",
     title: "Summer Trip",
     driveFolderId: null
   };
@@ -60,6 +60,10 @@ test("createTrip resumes a row left incomplete by Drive failure", async () => {
     }
 
     if (String(url).includes("/drive/v3/files?q=")) {
+      assert.match(
+        decodeURIComponent(String(url)),
+        /name = 'Summer-Trip'/
+      );
       return jsonResponse({
         files: [{ id: "trip-folder", name: "summer-trip" }]
       });
@@ -72,9 +76,9 @@ test("createTrip resumes a row left incomplete by Drive failure", async () => {
     const result = await createTrip(environment, "Summer Trip");
 
     assert.equal(result.statusCode, 200);
-    assert.equal(result.payload.trip.id, "summer-trip");
+    assert.equal(result.payload.trip.id, "Summer-Trip");
     assert.deepEqual(lookedUpTripIds, ["summer-trip", "summer-trip"]);
-    assert.deepEqual(updates, [["trip-folder", "summer-trip"]]);
+    assert.deepEqual(updates, [["trip-folder", "Summer-Trip"]]);
   } finally {
     globalThis.fetch = originalFetch;
   }

@@ -108,7 +108,7 @@ const listTripAlbums = async (environment, tripId) => {
       COUNT(trip_photos.id) AS photoCount
     FROM albums
     LEFT JOIN trip_photos ON trip_photos.album_id = albums.id
-    WHERE albums.trip_id = ?
+    WHERE albums.trip_id = ? COLLATE NOCASE
     GROUP BY albums.id
     ORDER BY albums.created_at ASC
     `
@@ -145,7 +145,7 @@ const listTripPhotos = async (environment, tripId, albumSlug = null) => {
       trip_photos.created_at AS createdAt
     FROM trip_photos
     LEFT JOIN albums ON albums.id = trip_photos.album_id
-    WHERE trip_photos.trip_id = ?
+    WHERE trip_photos.trip_id = ? COLLATE NOCASE
       ${albumFilter}
     ORDER BY trip_photos.created_at ASC
     `
@@ -176,7 +176,7 @@ export const createTrip = async (environment, title) => {
   }
 
   const existingTrip = await environment.DB.prepare(
-    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
+    "SELECT id, title, drive_folder_id AS driveFolderId FROM trips WHERE id = ? COLLATE NOCASE"
   )
     .bind(tripId)
     .first();
@@ -191,7 +191,7 @@ export const createTrip = async (environment, title) => {
     for (let suffix = 2; suffix < 50; suffix += 1) {
       const candidateId = `${tripId.slice(0, 60)}-${suffix}`;
       const clash = await environment.DB.prepare(
-        "SELECT id FROM trips WHERE id = ?"
+        "SELECT id FROM trips WHERE id = ? COLLATE NOCASE"
       )
         .bind(candidateId)
         .first();
@@ -214,6 +214,7 @@ export const createTrip = async (environment, title) => {
   }
 
   const tripRow = await ensureTripRow(environment, tripId, tripTitle);
+  const storageTripId = tripRow.tripId;
 
   let accessToken;
   try {
@@ -232,7 +233,7 @@ export const createTrip = async (environment, title) => {
   try {
     const folders = await ensureTripFolder(
       accessToken,
-      tripId,
+      storageTripId,
       environment,
       null
     );
@@ -243,7 +244,7 @@ export const createTrip = async (environment, title) => {
       WHERE id = ?
       `
     )
-      .bind(folders.tripFolderId, tripId)
+      .bind(folders.tripFolderId, storageTripId)
       .run();
 
     return {
@@ -251,7 +252,7 @@ export const createTrip = async (environment, title) => {
       payload: {
         ok: true,
         trip: {
-          id: tripId,
+          id: storageTripId,
           title: tripRow.title,
           driveFolderId: folders.tripFolderId
         }
@@ -262,7 +263,7 @@ export const createTrip = async (environment, title) => {
       statusCode: 502,
       payload: {
         error: "Trip saved in catalog, but Drive folder create failed.",
-        trip: { id: tripId, title: tripRow.title },
+        trip: { id: storageTripId, title: tripRow.title },
         detail: String(folderError)
       }
     };
@@ -288,7 +289,7 @@ const createAlbum = async (environment, tripId, name) => {
   }
 
   const trip = await environment.DB.prepare(
-    "SELECT id, drive_folder_id AS driveFolderId FROM trips WHERE id = ?"
+    "SELECT id, drive_folder_id AS driveFolderId FROM trips WHERE id = ? COLLATE NOCASE"
   )
     .bind(tripId)
     .first();
@@ -300,7 +301,12 @@ const createAlbum = async (environment, tripId, name) => {
     };
   }
 
-  const albumRow = await ensureAlbumRow(environment, tripId, albumName);
+  const storageTripId = trip.id;
+  const albumRow = await ensureAlbumRow(
+    environment,
+    storageTripId,
+    albumName
+  );
 
   let accessToken;
   try {
@@ -312,7 +318,7 @@ const createAlbum = async (environment, tripId, name) => {
         error: "Album saved in catalog, but Google Drive auth is not ready.",
         album: {
           id: albumRow.albumId,
-          tripId,
+          tripId: storageTripId,
           slug: albumRow.slug,
           name: albumRow.name
         },
@@ -324,7 +330,7 @@ const createAlbum = async (environment, tripId, name) => {
   try {
     const folders = await ensureTripFolder(
       accessToken,
-      tripId,
+      storageTripId,
       environment,
       trip.driveFolderId || null
     );
@@ -333,7 +339,7 @@ const createAlbum = async (environment, tripId, name) => {
     if (trip.driveFolderId !== tripFolderId) {
       tripFolderId = await cacheTripFolderId(
         environment,
-        tripId,
+        storageTripId,
         tripFolderId,
         trip.driveFolderId
       );
@@ -361,7 +367,7 @@ const createAlbum = async (environment, tripId, name) => {
         ok: true,
         album: {
           id: albumRow.albumId,
-          tripId,
+          tripId: storageTripId,
           slug: albumRow.slug,
           name: albumRow.name,
           driveFolderId: albumFolderId
@@ -375,7 +381,7 @@ const createAlbum = async (environment, tripId, name) => {
         error: "Album saved in catalog, but Drive folder create failed.",
         album: {
           id: albumRow.albumId,
-          tripId,
+          tripId: storageTripId,
           slug: albumRow.slug,
           name: albumRow.name
         },
