@@ -4,10 +4,18 @@ import {
   buildSequence,
   pickMissingNumberRound,
   buildLightPath,
+  normalizeCountingStep,
   pickLightWindow,
   pickMissingNeighbors,
   buildChant
 } from "./sequences.js";
+
+test("normalizeCountingStep rejects increments that can make loops unbounded", () => {
+  assert.equal(normalizeCountingStep("-1"), 1);
+  assert.equal(normalizeCountingStep("0.000001"), 1);
+  assert.equal(normalizeCountingStep("not-a-number"), 1);
+  assert.equal(normalizeCountingStep("3"), 3);
+});
 
 test("buildSequence counts by step within level range", () => {
   assert.deepEqual(buildSequence(2, 1), [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);

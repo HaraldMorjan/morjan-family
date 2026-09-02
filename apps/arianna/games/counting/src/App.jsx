@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildLightPath,
+  normalizeCountingStep,
   pickLightWindow,
   pickMissingNeighbors
 } from "@shared/sequences.js";
@@ -134,7 +135,7 @@ const readParams = () => {
   const missionId = params.get("mission");
   return {
     missionId,
-    step: Number(params.get("step") || "1") || 1,
+    step: normalizeCountingStep(params.get("step") || 1),
     level: Number(params.get("level") || "1") || 1,
     // Only printed / board QR URLs get qr=1 — Club pickers keep ← Modos
     fromQrScan: isQrDeepLink(params),

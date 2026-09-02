@@ -8,6 +8,13 @@ export const LEVEL_RANGES = {
   3: { min: 1, max: 100 }
 };
 
+export const normalizeCountingStep = (step) => {
+  const numericStep = Number(step);
+  return Number.isSafeInteger(numericStep) && numericStep > 0
+    ? numericStep
+    : 1;
+};
+
 export const buildSequence = (step, level = 1) => {
   const range = LEVEL_RANGES[level] || LEVEL_RANGES[1];
   const sequence = [];
