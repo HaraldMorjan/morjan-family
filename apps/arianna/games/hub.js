@@ -119,6 +119,7 @@ const render = () => {
 
       redeemButton.addEventListener("pointerdown", () => {
         if (redeemButton.disabled) return;
+        clearHold();
         redeemButton.textContent = "Sigue…";
         holdTimerId = window.setTimeout(() => {
           const result = spendStars(prize.cost);
