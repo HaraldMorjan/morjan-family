@@ -185,8 +185,14 @@ export const createTrip = async (environment, title) => {
     existingTrip &&
     !existingTrip.driveFolderId &&
     existingTrip.title === tripTitle;
+  const shouldClaimAutoCreatedTrip =
+    existingTrip && existingTrip.title === existingTrip.id;
 
-  if (existingTrip && !shouldResumeIncompleteTrip) {
+  if (
+    existingTrip &&
+    !shouldResumeIncompleteTrip &&
+    !shouldClaimAutoCreatedTrip
+  ) {
     let foundFreeId = false;
     for (let suffix = 2; suffix < 50; suffix += 1) {
       const candidateId = `${tripId.slice(0, 60)}-${suffix}`;
@@ -211,6 +217,19 @@ export const createTrip = async (environment, title) => {
         }
       };
     }
+  }
+
+  if (shouldClaimAutoCreatedTrip) {
+    await environment.DB.prepare(
+      `
+      UPDATE trips
+      SET title = ?
+      WHERE id = ?
+        AND title = ?
+      `
+    )
+      .bind(tripTitle, tripId, existingTrip.id)
+      .run();
   }
 
   const tripRow = await ensureTripRow(environment, tripId, tripTitle);
