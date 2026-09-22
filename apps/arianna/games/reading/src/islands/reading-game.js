@@ -214,11 +214,11 @@ export const mountReadingGame = (root) => {
     dayKey
   );
 
-  const completeMission = () => {
+  const completeMission = async () => {
     if (missionComplete || !params.missionId) return;
     missionComplete = true;
     const starsEarned = getMissionStars(params.missionId);
-    markMissionDone(params.missionId, starsEarned);
+    await markMissionDone(params.missionId, starsEarned);
     refreshStars();
     skyeMood("happy");
     celebrateMissionVictory({

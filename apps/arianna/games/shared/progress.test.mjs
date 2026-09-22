@@ -25,7 +25,36 @@ const installMemoryStorage = () => {
   };
 };
 
-test("star wallet adds and spends correctly", () => {
+const installMemoryLockManager = () => {
+  const previousDescriptor = Object.getOwnPropertyDescriptor(
+    globalThis,
+    "navigator"
+  );
+  let queue = Promise.resolve();
+  const request = (_name, operation) => {
+    const result = queue.then(operation);
+    queue = result.then(
+      () => undefined,
+      () => undefined
+    );
+    return result;
+  };
+
+  Object.defineProperty(globalThis, "navigator", {
+    configurable: true,
+    value: { locks: { request } }
+  });
+
+  return () => {
+    if (previousDescriptor) {
+      Object.defineProperty(globalThis, "navigator", previousDescriptor);
+    } else {
+      delete globalThis.navigator;
+    }
+  };
+};
+
+test("star wallet adds and spends correctly", async () => {
   memoryStore.clear();
   installMemoryStorage();
   saveProgress({
@@ -40,15 +69,15 @@ test("star wallet adds and spends correctly", () => {
   const richer = addStars(40);
   assert.equal(richer.stars, 40);
 
-  const spent = spendStars(30);
+  const spent = await spendStars(30);
   assert.equal(spent.ok, true);
   assert.equal(spent.state.stars, 10);
 
-  const tooMuch = spendStars(999);
+  const tooMuch = await spendStars(999);
   assert.equal(tooMuch.ok, false);
 });
 
-test("markMissionDone sets green flag and awards stars once", () => {
+test("markMissionDone sets green flag and awards stars once", async () => {
   memoryStore.clear();
   installMemoryStorage();
   saveProgress({
@@ -60,14 +89,56 @@ test("markMissionDone sets green flag and awards stars once", () => {
     missions: {}
   });
 
-  const first = markMissionDone("rumi-step1-l1", 8);
+  const first = await markMissionDone("rumi-step1-l1", 8);
   assert.equal(isMissionDone("rumi-step1-l1", first), true);
   assert.equal(first.stars, 8);
   assert.ok(first.stickers.includes("rumi-mic"));
 
-  const second = markMissionDone("rumi-step1-l1", 8);
+  const second = await markMissionDone("rumi-step1-l1", 8);
   assert.equal(second.stars, 12);
   assert.equal(second.stickers.filter((id) => id === "rumi-mic").length, 1);
+});
+
+test("concurrent mission writes preserve both completions", async (context) => {
+  memoryStore.clear();
+  installMemoryStorage();
+  context.after(installMemoryLockManager());
+  const staleState = loadProgress();
+
+  await Promise.all([
+    markMissionDone("rumi-step1-l1", 8, staleState),
+    markMissionDone("skye-silabas-l1", 8, staleState)
+  ]);
+
+  const saved = loadProgress();
+  assert.equal(isMissionDone("rumi-step1-l1", saved), true);
+  assert.equal(isMissionDone("skye-silabas-l1", saved), true);
+  assert.equal(saved.stars, 16);
+  assert.ok(saved.stickers.includes("rumi-mic"));
+  assert.ok(saved.stickers.includes("skye-wings"));
+});
+
+test("concurrent redemptions cannot spend one balance twice", async (context) => {
+  memoryStore.clear();
+  installMemoryStorage();
+  context.after(installMemoryLockManager());
+  saveProgress({
+    version: 1,
+    stars: 50,
+    stickers: [],
+    streak: { lastDay: null, count: 0 },
+    mastery: {},
+    missions: {}
+  });
+  const staleState = loadProgress();
+
+  const results = await Promise.all([
+    spendStars(50, staleState),
+    spendStars(50, staleState)
+  ]);
+
+  assert.equal(results.filter((result) => result.ok).length, 1);
+  assert.equal(loadProgress().stars, 0);
 });
 
 test("pickReviewItems prefers weaker words", () => {

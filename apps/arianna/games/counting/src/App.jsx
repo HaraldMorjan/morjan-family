@@ -307,16 +307,17 @@ const App = () => {
     }
 
     const starsEarned = getMissionStars(params.missionId);
-    const next = markMissionDone(params.missionId, starsEarned);
-    setStars(next.stars);
     setMissionComplete(true);
-    setFeedback("¡Encore! Luces y Falta listas 🎤");
-    rumiMood("happy");
-    celebrateMissionVictory({
-      theme: "rumi",
-      title: "¡ENCORE!",
-      subtitle: "Luces y Falta — ¡lo rompiste todo!",
-      starsEarned
+    void markMissionDone(params.missionId, starsEarned).then((next) => {
+      setStars(next.stars);
+      setFeedback("¡Encore! Luces y Falta listas 🎤");
+      rumiMood("happy");
+      celebrateMissionVictory({
+        theme: "rumi",
+        title: "¡ENCORE!",
+        subtitle: "Luces y Falta — ¡lo rompiste todo!",
+        starsEarned
+      });
     });
   }, [allTabsDone, missionComplete, params.missionId]);
 

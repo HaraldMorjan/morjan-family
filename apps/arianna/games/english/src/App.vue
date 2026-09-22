@@ -142,12 +142,12 @@ export default {
       stars.value = loadProgress().stars;
     };
 
-    const completeMission = () => {
+    const completeMission = async () => {
       if (missionComplete.value || !params.missionId) return;
-      const starsEarned = getMissionStars(params.missionId);
-      const next = markMissionDone(params.missionId, starsEarned);
-      stars.value = next.stars;
       missionComplete.value = true;
+      const starsEarned = getMissionStars(params.missionId);
+      const next = await markMissionDone(params.missionId, starsEarned);
+      stars.value = next.stars;
       feedback.value = "¡Club secreto desbloqueado! 🎀";
       kuromiMood("happy");
       celebrateMissionVictory({
