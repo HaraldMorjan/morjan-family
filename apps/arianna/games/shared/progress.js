@@ -18,6 +18,7 @@ const migrateLegacyStickers = (stickerIds = []) => {
 };
 
 const STORAGE_KEY = "arianna-learning-club-v1";
+const PROGRESS_LOCK_NAME = `${STORAGE_KEY}-write`;
 const DEFAULT_STATE = {
   version: 1,
   stars: 0,
@@ -83,6 +84,14 @@ export const saveProgress = (state) => {
   return state;
 };
 
+const withProgressLock = (operation) => {
+  const lockManager = globalThis.navigator?.locks;
+  if (!lockManager?.request) {
+    return Promise.resolve().then(operation);
+  }
+  return lockManager.request(PROGRESS_LOCK_NAME, operation);
+};
+
 const todayKey = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -126,17 +135,19 @@ export const addStars = (amount, state = loadProgress()) => {
   return nextState;
 };
 
-export const spendStars = (amount, state = loadProgress()) => {
-  if ((state.stars || 0) < amount) {
-    return { ok: false, state };
-  }
+export const spendStars = (amount) =>
+  withProgressLock(() => {
+    const state = loadProgress();
+    if ((state.stars || 0) < amount) {
+      return { ok: false, state };
+    }
 
-  const nextState = saveProgress({
-    ...state,
-    stars: state.stars - amount
+    const nextState = saveProgress({
+      ...state,
+      stars: state.stars - amount
+    });
+    return { ok: true, state: nextState };
   });
-  return { ok: true, state: nextState };
-};
 
 export const unlockSticker = (stickerId, state = loadProgress()) => {
   if (state.stickers.includes(stickerId)) {
@@ -167,65 +178,74 @@ export const isMissionDone = (missionId, state = loadProgress()) => {
   return Boolean(entry.day === today);
 };
 
-export const markMissionDone = (missionId, starsEarned = 5, state = loadProgress()) => {
-  const alreadyDone = isMissionDone(missionId, state);
-  const today = getDayKey();
-  let nextState = {
-    ...state,
-    missions: {
-      ...state.missions,
-      [missionId]: {
-        done: true,
-        at: new Date().toISOString(),
-        day: today
+export const markMissionDone = (missionId, starsEarned = 5) =>
+  withProgressLock(() => {
+    const state = loadProgress();
+    const alreadyDone = isMissionDone(missionId, state);
+    const today = getDayKey();
+    let nextState = {
+      ...state,
+      missions: {
+        ...state.missions,
+        [missionId]: {
+          done: true,
+          at: new Date().toISOString(),
+          day: today
+        }
       }
+    };
+
+    if (!alreadyDone) {
+      nextState = addStars(starsEarned, nextState);
+      const albumSticker = getStickerForMission(missionId);
+      if (albumSticker) {
+        nextState = unlockSticker(albumSticker.id, nextState);
+      }
+    } else {
+      nextState = addStars(
+        Math.max(1, Math.floor(starsEarned / 2)),
+        nextState
+      );
     }
-  };
 
-  if (!alreadyDone) {
-    nextState = addStars(starsEarned, nextState);
-    const albumSticker = getStickerForMission(missionId);
-    if (albumSticker) {
-      nextState = unlockSticker(albumSticker.id, nextState);
-    }
-  } else {
-    nextState = addStars(Math.max(1, Math.floor(starsEarned / 2)), nextState);
-  }
-
-  return saveProgress(nextState);
-};
-
-export const setFavoriteSticker = (stickerId, state = loadProgress()) => {
-  if (stickerId && !state.stickers.includes(stickerId)) {
-    return state;
-  }
-
-  return saveProgress({
-    ...state,
-    favoriteSticker: stickerId || null
+    return saveProgress(nextState);
   });
-};
+
+export const setFavoriteSticker = (stickerId) =>
+  withProgressLock(() => {
+    const state = loadProgress();
+    if (stickerId && !state.stickers.includes(stickerId)) {
+      return state;
+    }
+
+    return saveProgress({
+      ...state,
+      favoriteSticker: stickerId || null
+    });
+  });
 
 export const getMastery = (itemId, state = loadProgress()) =>
   state.mastery[itemId] || { correct: 0, wrong: 0, strength: 0 };
 
-export const recordMastery = (itemId, wasCorrect, state = loadProgress()) => {
-  const current = getMastery(itemId, state);
-  const correct = current.correct + (wasCorrect ? 1 : 0);
-  const wrong = current.wrong + (wasCorrect ? 0 : 1);
-  const strength = Math.max(
-    0,
-    Math.min(5, current.strength + (wasCorrect ? 1 : -1))
-  );
+export const recordMastery = (itemId, wasCorrect) =>
+  withProgressLock(() => {
+    const state = loadProgress();
+    const current = getMastery(itemId, state);
+    const correct = current.correct + (wasCorrect ? 1 : 0);
+    const wrong = current.wrong + (wasCorrect ? 0 : 1);
+    const strength = Math.max(
+      0,
+      Math.min(5, current.strength + (wasCorrect ? 1 : -1))
+    );
 
-  return saveProgress({
-    ...state,
-    mastery: {
-      ...state.mastery,
-      [itemId]: { correct, wrong, strength }
-    }
+    return saveProgress({
+      ...state,
+      mastery: {
+        ...state.mastery,
+        [itemId]: { correct, wrong, strength }
+      }
+    });
   });
-};
 
 export const pickReviewItems = (itemIds, limit = 4, state = loadProgress()) => {
   const scored = itemIds.map((itemId) => {
@@ -264,8 +284,11 @@ export const createUniquePicker = (itemIds) => {
   return { take };
 };
 
-export const resetMissions = (state = loadProgress()) =>
-  saveProgress({
-    ...state,
-    missions: {}
+export const resetMissions = () =>
+  withProgressLock(() => {
+    const state = loadProgress();
+    return saveProgress({
+      ...state,
+      missions: {}
+    });
   });

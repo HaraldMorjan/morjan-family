@@ -77,12 +77,12 @@ const render = () => {
         ? `<span class="sticker__emoji">${sticker.emoji}</span><span class="sticker__name">${sticker.name}</span>`
         : `<span class="sticker__lock" aria-hidden="true">?</span><span class="sticker__hint">${sticker.hint}</span>`;
 
-      slot.addEventListener("click", () => {
+      slot.addEventListener("click", async () => {
         if (!unlocked) {
           celebrate({ pieceCount: 12 });
           return;
         }
-        setFavoriteSticker(sticker.id);
+        await setFavoriteSticker(sticker.id);
         celebrate({ pieceCount: 55 });
         render();
       });
@@ -120,8 +120,8 @@ const render = () => {
       redeemButton.addEventListener("pointerdown", () => {
         if (redeemButton.disabled) return;
         redeemButton.textContent = "Sigue…";
-        holdTimerId = window.setTimeout(() => {
-          const result = spendStars(prize.cost);
+        holdTimerId = window.setTimeout(async () => {
+          const result = await spendStars(prize.cost);
           if (!result.ok) {
             clearHold();
             return;
