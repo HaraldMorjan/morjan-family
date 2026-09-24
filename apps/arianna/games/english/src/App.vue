@@ -9,7 +9,7 @@ import {
 } from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import {
-  getMissionStars,
+  resolveMissionForGame,
   missionsForGame,
   isQrDeepLink
 } from "@shared/missions.js";
@@ -50,14 +50,15 @@ const KUROMI_PICKER_BLURBS = {
 
 const readParams = () => {
   const params = new URLSearchParams(window.location.search);
-  const missionId = params.get("mission");
+  const mission = resolveMissionForGame("english", params);
   return {
-    missionId,
-    mode: params.get("mode") || "match",
-    set: params.get("set") || "animals",
+    missionId: mission?.id ?? null,
+    starsEarned: mission?.stars ?? 0,
+    mode: mission?.query.mode ?? "match",
+    set: mission?.query.set ?? "animals",
     // Only printed / board QR URLs get qr=1 — Club pickers keep ← Modos
     fromQrScan: isQrDeepLink(params),
-    showPicker: !missionId
+    showPicker: !mission
   };
 };
 
@@ -144,7 +145,7 @@ export default {
 
     const completeMission = () => {
       if (missionComplete.value || !params.missionId) return;
-      const starsEarned = getMissionStars(params.missionId);
+      const starsEarned = params.starsEarned;
       const next = markMissionDone(params.missionId, starsEarned);
       stars.value = next.stars;
       missionComplete.value = true;

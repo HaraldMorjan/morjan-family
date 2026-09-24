@@ -11,7 +11,7 @@ import {
 } from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import {
-  getMissionStars,
+  resolveMissionForGame,
   missionsForGame,
   isQrDeepLink
 } from "@shared/missions.js";
@@ -131,14 +131,15 @@ const RHYTHM_DIFFICULTY = {
 
 const readParams = () => {
   const params = new URLSearchParams(window.location.search);
-  const missionId = params.get("mission");
+  const mission = resolveMissionForGame("counting", params);
   return {
-    missionId,
-    step: Number(params.get("step") || "1") || 1,
-    level: Number(params.get("level") || "1") || 1,
+    missionId: mission?.id ?? null,
+    starsEarned: mission?.stars ?? 0,
+    step: Number(mission?.query.step ?? "1"),
+    level: Number(mission?.query.level ?? "1"),
     // Only printed / board QR URLs get qr=1 — Club pickers keep ← Modos
     fromQrScan: isQrDeepLink(params),
-    showPicker: !missionId
+    showPicker: !mission
   };
 };
 
@@ -306,7 +307,7 @@ const App = () => {
       return;
     }
 
-    const starsEarned = getMissionStars(params.missionId);
+    const starsEarned = params.starsEarned;
     const next = markMissionDone(params.missionId, starsEarned);
     setStars(next.stars);
     setMissionComplete(true);
