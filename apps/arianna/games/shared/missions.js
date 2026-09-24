@@ -143,6 +143,29 @@ export const missionsForGame = (gameId) =>
 export const upcomingMissionsForGame = (gameId) =>
   laterSkyeMissions.filter((mission) => mission.game === gameId);
 
+/**
+ * Resolve a live mission only when the URL matches its canonical game setup.
+ * Mission ids are used as wallet keys, so callers must not trust them alone.
+ */
+export const resolveMissionForGame = (gameId, searchParams) => {
+  if (!searchParams) {
+    return null;
+  }
+
+  const missionId = searchParams.get("mission");
+  const mission = missions.find(
+    (candidate) => candidate.id === missionId && candidate.game === gameId
+  );
+  if (!mission) {
+    return null;
+  }
+
+  const hasCanonicalSetup = Object.entries(mission.query).every(
+    ([key, value]) => searchParams.get(key) === value
+  );
+  return hasCanonicalSetup ? mission : null;
+};
+
 export const getMissionStars = (missionId) =>
   getMissionById(missionId)?.stars ?? DEFAULT_MISSION_STARS;
 

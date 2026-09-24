@@ -10,7 +10,7 @@ import { loadProgress, markMissionDone } from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import { pulseCharacterMood } from "@shared/characterMood.js";
 import {
-  getMissionStars,
+  resolveMissionForGame,
   missionsForGame,
   upcomingMissionsForGame,
   isQrDeepLink
@@ -85,14 +85,15 @@ const otherSyllables = (excludeSyllable) => {
 
 const readParams = () => {
   const params = new URLSearchParams(window.location.search);
-  const missionId = params.get("mission");
+  const mission = resolveMissionForGame("reading", params);
   return {
-    missionId,
-    activity: params.get("activity") || "silabas",
-    level: params.get("level") || "1",
+    missionId: mission?.id ?? null,
+    starsEarned: mission?.stars ?? 0,
+    activity: mission?.query.activity ?? "silabas",
+    level: mission?.query.level ?? "1",
     // Only printed / board QR URLs get qr=1 — Club pickers keep ← Modos
     fromQrScan: isQrDeepLink(params),
-    showPicker: !missionId
+    showPicker: !mission
   };
 };
 
@@ -217,7 +218,7 @@ export const mountReadingGame = (root) => {
   const completeMission = () => {
     if (missionComplete || !params.missionId) return;
     missionComplete = true;
-    const starsEarned = getMissionStars(params.missionId);
+    const starsEarned = params.starsEarned;
     markMissionDone(params.missionId, starsEarned);
     refreshStars();
     skyeMood("happy");
