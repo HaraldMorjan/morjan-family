@@ -18,6 +18,7 @@ const migrateLegacyStickers = (stickerIds = []) => {
 };
 
 const STORAGE_KEY = "arianna-learning-club-v1";
+const failedSaves = new WeakSet();
 const DEFAULT_STATE = {
   version: 1,
   stars: 0,
@@ -71,17 +72,22 @@ export const loadProgress = () => {
 
 export const saveProgress = (state) => {
   if (typeof localStorage === "undefined") {
+    failedSaves.add(state);
     return state;
   }
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    failedSaves.delete(state);
   } catch (saveError) {
-    // Quota or private mode — ignore silently for kid UX.
+    failedSaves.add(state);
   }
 
   return state;
 };
+
+export const wasProgressSaved = (state) =>
+  Boolean(state) && !failedSaves.has(state);
 
 const todayKey = () => {
   const now = new Date();
@@ -135,6 +141,9 @@ export const spendStars = (amount, state = loadProgress()) => {
     ...state,
     stars: state.stars - amount
   });
+  if (!wasProgressSaved(nextState)) {
+    return { ok: false, state, reason: "storage-unavailable" };
+  }
   return { ok: true, state: nextState };
 };
 

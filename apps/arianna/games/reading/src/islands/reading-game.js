@@ -6,7 +6,11 @@ import {
   sentences,
   WORDS_TO_COMPLETE
 } from "../content/words.js";
-import { loadProgress, markMissionDone } from "@shared/progress.js";
+import {
+  loadProgress,
+  markMissionDone,
+  wasProgressSaved
+} from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import { pulseCharacterMood } from "@shared/characterMood.js";
 import {
@@ -215,10 +219,15 @@ export const mountReadingGame = (root) => {
   );
 
   const completeMission = () => {
-    if (missionComplete || !params.missionId) return;
-    missionComplete = true;
+    if (missionComplete || !params.missionId) return false;
     const starsEarned = getMissionStars(params.missionId);
-    markMissionDone(params.missionId, starsEarned);
+    const next = markMissionDone(params.missionId, starsEarned);
+    if (!wasProgressSaved(next)) {
+      refreshStars();
+      setFeedback("No se pudo guardar. Pide ayuda y vuelve a intentarlo.");
+      return false;
+    }
+    missionComplete = true;
     refreshStars();
     skyeMood("happy");
     celebrateMissionVictory({
@@ -227,6 +236,7 @@ export const mountReadingGame = (root) => {
       subtitle: "¡Volaste alto y leíste como una campeona!",
       starsEarned
     });
+    return true;
   };
 
   const setFeedback = (text, ok = false) => {
@@ -246,7 +256,9 @@ export const mountReadingGame = (root) => {
     celebrate({ pieceCount: 40 });
 
     if (clearedCount >= WORDS_TO_COMPLETE) {
-      completeMission();
+      if (!completeMission()) {
+        return;
+      }
       setFeedback(`¡Misión del día lista! (${progressLabel()}) ✈️`, true);
       root.querySelector("[data-balloons]")?.replaceChildren();
       root.querySelector("[data-choices]")?.replaceChildren();

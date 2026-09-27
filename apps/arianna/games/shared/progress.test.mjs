@@ -8,7 +8,8 @@ import {
   pickReviewItems,
   createUniquePicker,
   loadProgress,
-  saveProgress
+  saveProgress,
+  wasProgressSaved
 } from "./progress.js";
 
 const memoryStore = new Map();
@@ -46,6 +47,32 @@ test("star wallet adds and spends correctly", () => {
 
   const tooMuch = spendStars(999);
   assert.equal(tooMuch.ok, false);
+});
+
+test("failed storage writes cannot spend stars or report saved progress", () => {
+  memoryStore.clear();
+  installMemoryStorage();
+  saveProgress({
+    version: 1,
+    stars: 50,
+    stickers: [],
+    favoriteSticker: null,
+    streak: { lastDay: null, count: 0 },
+    mastery: {},
+    missions: {}
+  });
+  globalThis.localStorage.setItem = () => {
+    throw new DOMException("Storage is blocked.", "QuotaExceededError");
+  };
+
+  const spent = spendStars(30);
+  const completed = markMissionDone("rumi-step1-l1", 8);
+
+  assert.equal(spent.ok, false);
+  assert.equal(spent.reason, "storage-unavailable");
+  assert.equal(loadProgress().stars, 50);
+  assert.equal(wasProgressSaved(completed), false);
+  assert.equal(loadProgress().missions["rumi-step1-l1"], undefined);
 });
 
 test("markMissionDone sets green flag and awards stars once", () => {

@@ -5,7 +5,8 @@ import {
   loadProgress,
   markMissionDone,
   recordMastery,
-  createUniquePicker
+  createUniquePicker,
+  wasProgressSaved
 } from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import {
@@ -146,6 +147,11 @@ export default {
       if (missionComplete.value || !params.missionId) return;
       const starsEarned = getMissionStars(params.missionId);
       const next = markMissionDone(params.missionId, starsEarned);
+      if (!wasProgressSaved(next)) {
+        stars.value = loadProgress().stars;
+        feedback.value = "No se pudo guardar. Pide ayuda y vuelve a intentarlo.";
+        return;
+      }
       stars.value = next.stars;
       missionComplete.value = true;
       feedback.value = "¡Club secreto desbloqueado! 🎀";
