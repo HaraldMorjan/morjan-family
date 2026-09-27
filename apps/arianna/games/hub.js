@@ -123,7 +123,14 @@ const render = () => {
         holdTimerId = window.setTimeout(() => {
           const result = spendStars(prize.cost);
           if (!result.ok) {
-            clearHold();
+            if (result.reason === "storage-unavailable") {
+              window.clearTimeout(holdTimerId);
+              holdTimerId = 0;
+              redeemButton.disabled = true;
+              redeemButton.textContent = "No se pudo guardar";
+            } else {
+              clearHold();
+            }
             return;
           }
           celebrate({ pieceCount: 90 });

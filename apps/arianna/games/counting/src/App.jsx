@@ -7,7 +7,8 @@ import {
 import {
   loadProgress,
   markMissionDone,
-  isMissionDone
+  isMissionDone,
+  wasProgressSaved
 } from "@shared/progress.js";
 import { celebrate, celebrateMissionVictory } from "@shared/celebrate.js";
 import {
@@ -308,6 +309,11 @@ const App = () => {
 
     const starsEarned = getMissionStars(params.missionId);
     const next = markMissionDone(params.missionId, starsEarned);
+    if (!wasProgressSaved(next)) {
+      setStars(loadProgress().stars);
+      setFeedback("No se pudo guardar. Pide ayuda y vuelve a intentarlo.");
+      return;
+    }
     setStars(next.stars);
     setMissionComplete(true);
     setFeedback("¡Encore! Luces y Falta listas 🎤");
