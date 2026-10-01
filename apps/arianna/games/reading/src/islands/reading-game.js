@@ -180,6 +180,7 @@ export const mountReadingGame = (root) => {
   let missionComplete = false;
   let clearedCount = 0;
   let packIndex = 0;
+  let roundTransitionPending = false;
 
   const syllableSource =
     params.level === "1" ? beginnerSyllableWords : syllableWords;
@@ -240,6 +241,10 @@ export const mountReadingGame = (root) => {
   const progressLabel = () => `${clearedCount}/${WORDS_TO_COMPLETE}`;
 
   const onItemCleared = (nextRender) => {
+    if (missionComplete || roundTransitionPending) {
+      return;
+    }
+    roundTransitionPending = true;
     clearedCount += 1;
     packIndex += 1;
     skyeMood("happy");
@@ -258,7 +263,10 @@ export const mountReadingGame = (root) => {
     }
 
     setFeedback(`¡Bien! (${progressLabel()})`, true);
-    window.setTimeout(nextRender, 700);
+    window.setTimeout(() => {
+      roundTransitionPending = false;
+      nextRender();
+    }, 700);
   };
 
   const paintTargetSyllables = (targetWord, syllables, builtCount) => {
