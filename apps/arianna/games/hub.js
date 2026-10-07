@@ -19,8 +19,15 @@ const prizeShelf = document.getElementById("prizeShelf");
 const albumProgress = document.getElementById("albumProgress");
 const albumGoal = document.getElementById("albumGoal");
 const albumFavorite = document.getElementById("albumFavorite");
+const pendingRedemptionTimers = new Set();
+
+const cancelPendingRedemptions = () => {
+  pendingRedemptionTimers.forEach((timerId) => window.clearTimeout(timerId));
+  pendingRedemptionTimers.clear();
+};
 
 const render = () => {
+  cancelPendingRedemptions();
   const progress = loadProgress();
   const unlockedCount = countUnlockedInAlbum(progress.stickers);
   const goal = getCurrentAlbumGoal(unlockedCount);
@@ -113,6 +120,7 @@ const render = () => {
       let holdTimerId = 0;
       const clearHold = () => {
         window.clearTimeout(holdTimerId);
+        pendingRedemptionTimers.delete(holdTimerId);
         holdTimerId = 0;
         redeemButton.textContent = "Canjear";
       };
@@ -120,7 +128,11 @@ const render = () => {
       redeemButton.addEventListener("pointerdown", () => {
         if (redeemButton.disabled) return;
         redeemButton.textContent = "Sigue…";
-        holdTimerId = window.setTimeout(() => {
+        const timerId = window.setTimeout(() => {
+          pendingRedemptionTimers.delete(timerId);
+          if (holdTimerId === timerId) {
+            holdTimerId = 0;
+          }
           const result = spendStars(prize.cost);
           if (!result.ok) {
             clearHold();
@@ -131,6 +143,8 @@ const render = () => {
           render();
           clearHold();
         }, 900);
+        holdTimerId = timerId;
+        pendingRedemptionTimers.add(timerId);
       });
 
       ["pointerup", "pointerleave", "pointercancel"].forEach((eventName) => {
