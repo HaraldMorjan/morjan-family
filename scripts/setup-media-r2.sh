@@ -33,7 +33,7 @@ npx --yes wrangler r2 bucket domain add "${BUCKET_NAME}" \
 echo
 echo "Done."
 echo "  Bucket:  ${BUCKET_NAME}"
-echo "  Public:  https://${MEDIA_DOMAIN}/<trip-id>/<file>"
+echo "  Public:  https://${MEDIA_DOMAIN}/<trip-id>/<album-id>/<file>"
 echo
 echo "Upload a trip folder next:"
-echo "  bash scripts/upload-trip-photos.sh guatemala-highlands-2024 ./path/to/photos"
+echo "  bash scripts/upload-trip-photos.sh guatemala-highlands-2024 lake-atitlan ./path/to/photos"

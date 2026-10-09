@@ -27,11 +27,33 @@ printf '%s\n' "$@" >> "${WRANGLER_CALL_LOG}"
 EOF
 chmod +x "${TEMP_DIR}/bin/npx"
 
-WRANGLER_CALL_LOG="${TEMP_DIR}/wrangler.log" \
-  PATH="${TEMP_DIR}/bin:${PATH}" \
-  bash "${ROOT_DIR}/scripts/upload-trip-photos.sh" \
-    test-trip \
-    "${TEMP_DIR}/photos" > /dev/null
+for album_id in first-album second-album; do
+  WRANGLER_CALL_LOG="${TEMP_DIR}/wrangler.log" \
+    PATH="${TEMP_DIR}/bin:${PATH}" \
+    bash "${ROOT_DIR}/scripts/upload-trip-photos.sh" \
+      test-trip \
+      "${album_id}" \
+      "${TEMP_DIR}/photos" >> "${TEMP_DIR}/output.log"
+done
+
+for album_id in first-album second-album; do
+  expected_key="morjan-trips/test-trip/${album_id}/photo.jpg"
+  if ! grep -Fxq -- "${expected_key}" "${TEMP_DIR}/wrangler.log"; then
+    echo "Missing album-scoped R2 key: ${expected_key}" >&2
+    exit 1
+  fi
+
+  expected_url="https://media.morjan.family/test-trip/${album_id}/photo.jpg"
+  if ! grep -Fq -- "${expected_url}" "${TEMP_DIR}/output.log"; then
+    echo "Missing album-scoped public URL: ${expected_url}" >&2
+    exit 1
+  fi
+done
+
+if grep -Fxq -- "morjan-trips/test-trip/photo.jpg" "${TEMP_DIR}/wrangler.log"; then
+  echo "Found legacy unscoped R2 key" >&2
+  exit 1
+fi
 
 for expected_type in \
   image/jpeg \
@@ -46,4 +68,4 @@ do
   fi
 done
 
-echo "upload-trip-photos MIME metadata test passed"
+echo "upload-trip-photos album scoping and MIME metadata tests passed"

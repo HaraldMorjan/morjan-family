@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
-# Upload a local folder of web-sized photos into R2 under a trip id.
+# Upload a local folder of web-sized photos into an album-scoped R2 path.
 #
 # Usage:
-#   bash scripts/upload-trip-photos.sh <trip-id> <local-folder>
+#   bash scripts/upload-trip-photos.sh <trip-id> <album-id> <local-folder>
 #
 # Example:
-#   bash scripts/upload-trip-photos.sh guatemala-highlands-2024 ~/Pictures/guatemala-web
+#   bash scripts/upload-trip-photos.sh guatemala-highlands-2024 lake-atitlan ~/Pictures/guatemala-web
 #
-# Object keys: morjan-trips/<trip-id>/<filename>
-# Public URL:  https://media.morjan.family/<trip-id>/<filename>
+# Object keys: morjan-trips/<trip-id>/<album-id>/<filename>
+# Public URL:  https://media.morjan.family/<trip-id>/<album-id>/<filename>
 set -euo pipefail
 
 BUCKET_NAME="morjan-trips"
 MEDIA_BASE="https://media.morjan.family"
 TRIP_ID="${1:-}"
-SOURCE_DIR="${2:-}"
+ALBUM_ID="${2:-}"
+SOURCE_DIR="${3:-}"
 
-if [[ -z "${TRIP_ID}" || -z "${SOURCE_DIR}" ]]; then
-  echo "Usage: bash scripts/upload-trip-photos.sh <trip-id> <local-folder>"
+if [[ -z "${TRIP_ID}" || -z "${ALBUM_ID}" || -z "${SOURCE_DIR}" ]]; then
+  echo "Usage: bash scripts/upload-trip-photos.sh <trip-id> <album-id> <local-folder>"
   exit 1
 fi
 
@@ -28,6 +29,11 @@ fi
 
 if [[ ! "${TRIP_ID}" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
   echo "Trip id must be lowercase kebab-case (e.g. guatemala-highlands-2024)."
+  exit 1
+fi
+
+if [[ ! "${ALBUM_ID}" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+  echo "Album id must be lowercase kebab-case (e.g. lake-atitlan)."
   exit 1
 fi
 
@@ -63,11 +69,11 @@ mime_type_for_file() {
   esac
 }
 
-echo "==> Uploading ${#photo_files[@]} file(s) to ${BUCKET_NAME}/${TRIP_ID}/"
+echo "==> Uploading ${#photo_files[@]} file(s) to ${BUCKET_NAME}/${TRIP_ID}/${ALBUM_ID}/"
 
 for photo_path in "${photo_files[@]}"; do
   file_name="$(basename "${photo_path}")"
-  object_key="${BUCKET_NAME}/${TRIP_ID}/${file_name}"
+  object_key="${BUCKET_NAME}/${TRIP_ID}/${ALBUM_ID}/${file_name}"
   content_type="$(mime_type_for_file "${file_name}")"
   echo "  → ${object_key}"
   npx --yes wrangler r2 object put "${object_key}" \
@@ -80,12 +86,12 @@ done
 echo
 echo "Upload complete. Add this to apps/trips/data.js:"
 echo
-echo "  cover: \"${MEDIA_BASE}/${TRIP_ID}/${uploaded_names[0]}\","
+echo "  cover: \"${MEDIA_BASE}/${TRIP_ID}/${ALBUM_ID}/${uploaded_names[0]}\","
 echo "  photos: ["
 for file_name in "${uploaded_names[@]}"; do
-  echo "    \"${MEDIA_BASE}/${TRIP_ID}/${file_name}\","
+  echo "    \"${MEDIA_BASE}/${TRIP_ID}/${ALBUM_ID}/${file_name}\","
 done
 echo "  ],"
 echo
 echo "Public check (after custom domain is active):"
-echo "  ${MEDIA_BASE}/${TRIP_ID}/${uploaded_names[0]}"
+echo "  ${MEDIA_BASE}/${TRIP_ID}/${ALBUM_ID}/${uploaded_names[0]}"
