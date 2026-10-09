@@ -2,7 +2,7 @@
 # Managed via scripts/setup-media-r2.sh and scripts/upload-trip-photos.sh
 #
 # Bucket: morjan-trips
-# Public host: https://media.morjan.family/<trip-id>/<file>
+# Public host: https://media.morjan.family/<trip-id>/<album-id>/<file>
 
 name = "morjan-media"
 compatibility_date = "2026-07-17"

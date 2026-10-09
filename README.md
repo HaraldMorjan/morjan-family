@@ -60,16 +60,21 @@ That creates bucket `morjan-trips` and attaches custom domain `media.morjan.fami
 Compress/export web-sized photos first, then:
 
 ```bash
-bash scripts/upload-trip-photos.sh guatemala-highlands-2024 ./path/to/photos
+bash scripts/upload-trip-photos.sh guatemala-highlands-2024 lake-atitlan ./path/to/photos
 ```
 
-The script prints ready-to-paste `cover` / `photos` lines for `apps/trips/data.js`.
+The album ID keeps common camera filenames from overwriting photos in another
+album. The script prints ready-to-paste `cover` / `photos` lines for
+`apps/trips/data.js`.
 
 Helpers already in `data.js`:
 
 ```js
-cover: morjanMediaUrl("guatemala-highlands-2024", "01.jpg"),
-photos: morjanTripPhotos("guatemala-highlands-2024", ["01.jpg", "02.jpg"]),
+cover: morjanMediaUrl("guatemala-highlands-2024", "lake-atitlan/01.jpg"),
+photos: morjanTripPhotos("guatemala-highlands-2024", [
+  "lake-atitlan/01.jpg",
+  "lake-atitlan/02.jpg"
+]),
 ```
 
 Tiny placeholders may stay in `apps/trips/img/`. Real albums go to R2.

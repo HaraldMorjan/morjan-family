@@ -3,9 +3,9 @@
  *
  * Photo hosting (wired):
  *   Bucket:  morjan-trips (Cloudflare R2)
- *   Public:  https://media.morjan.family/<trip-id>/<file>
+ *   Public:  https://media.morjan.family/<trip-id>/<album-id>/<file>
  *   Setup:   bash scripts/setup-media-r2.sh
- *   Upload:  bash scripts/upload-trip-photos.sh <trip-id> <local-folder>
+ *   Upload:  bash scripts/upload-trip-photos.sh <trip-id> <album-id> <local-folder>
  *
  * Keep full-quality originals in Google Drive / external SSD.
  * This file only stores metadata + URLs (or tiny local placeholders).

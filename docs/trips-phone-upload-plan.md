@@ -33,7 +33,7 @@ Related today:
 
 - Gallery UI: `apps/trips/` (lightbox + `photos[]` in `data.js`)
 - R2 wiring (manual): `scripts/setup-media-r2.sh`, `scripts/upload-trip-photos.sh`
-- Public media host: `https://media.morjan.family/<trip-id>/<file>`
+- Public media host: `https://media.morjan.family/<trip-id>/<album-id>/<file>`
 
 ---
 
