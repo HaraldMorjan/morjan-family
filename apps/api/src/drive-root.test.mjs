@@ -9,7 +9,7 @@ const jsonResponse = (payload, status = 200) =>
     headers: { "content-type": "application/json" }
   });
 
-test("reuses a legacy trip folder when both Drive roots exist", async () => {
+test("only reuses top-level Drive roots when both root names exist", async () => {
   const originalFetch = globalThis.fetch;
   const calls = [];
 
@@ -19,7 +19,10 @@ test("reuses a legacy trip folder when both Drive roots exist", async () => {
     const requestUrl = new URL(url);
     const query = requestUrl.searchParams.get("q");
 
-    if (query?.includes("name = 'trips'") && !query.includes("in parents")) {
+    if (
+      query?.includes("name = 'trips'") &&
+      query.includes("'root' in parents")
+    ) {
       return jsonResponse({ files: [{ id: "trips-root", name: "trips" }] });
     }
     if (
@@ -28,7 +31,10 @@ test("reuses a legacy trip folder when both Drive roots exist", async () => {
     ) {
       return jsonResponse({ files: [] });
     }
-    if (query?.includes("name = 'media'") && !query.includes("in parents")) {
+    if (
+      query?.includes("name = 'media'") &&
+      query.includes("'root' in parents")
+    ) {
       return jsonResponse({ files: [{ id: "media-root", name: "media" }] });
     }
     if (

@@ -71,11 +71,9 @@ export const getDriveAccessToken = async (environment) => {
 
 const findFolderByName = async (accessToken, folderName, parentFolderId) => {
   const escapedName = escapeDriveQueryValue(folderName);
-  const parentClause = parentFolderId
-    ? ` and '${parentFolderId}' in parents`
-    : "";
+  const escapedParentId = escapeDriveQueryValue(parentFolderId || "root");
   const query = encodeURIComponent(
-    `name = '${escapedName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false${parentClause}`
+    `name = '${escapedName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false and '${escapedParentId}' in parents`
   );
 
   const listPayload = await driveJson(
