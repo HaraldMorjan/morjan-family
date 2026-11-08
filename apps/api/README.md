@@ -95,18 +95,19 @@ add `api.morjan.family` in zone `morjan.family`.)
 
 ```bash
 curl https://api.morjan.family/health
-curl https://api.morjan.family/trips
+curl -H "X-Upload-Token: $UPLOAD_TOKEN" https://api.morjan.family/trips
 ```
 
 ## Catalog routes
 
 | Method | Path | Auth | Purpose |
 | --- | --- | --- | --- |
-| GET | `/trips` | no | List trips |
+| GET | `/health` | no | Liveness |
+| GET | `/trips` | token | List trips (no Drive ids) |
 | POST | `/trips` | token | JSON `{ "title" }` → create trip + Drive folder |
-| GET | `/trips/:tripId/albums` | no | List Drive albums for a trip |
+| GET | `/trips/:tripId/albums` | token | List albums for a trip (no Drive ids) |
 | POST | `/trips/:tripId/albums` | token | JSON `{ "name" }` → create album + Drive folder |
-| GET | `/trips/:tripId/photos` | no | List photos (`?album=<slug>` optional) |
+| GET | `/trips/:tripId/photos` | token | List photos (`?album=<slug>` optional; no Drive ids) |
 | POST | `/trips/:tripId/photos` | token | Upload photo |
 
 ## Upload (`POST /trips/:tripId/photos`)
@@ -117,10 +118,10 @@ slug; defaults to `Unsorted`).
 
 Pipeline order (locked):
 
-1. Validate token + trip id + type + size (max 25 MB)
+1. Validate token + trip id + type + size (max 20 MB — Images `.input()` limit)
 2. Auto-create D1 `trips` / `albums` rows if missing
 3. Upload **original** to Google Drive `trips/<trip-id>/<album-slug>/` (must succeed)
-4. Resize via Images binding (max edge 2048, JPEG q80) — falls back to original bytes if resize fails
+4. Resize via Images binding (max edge 2048, JPEG q80, EXIF stripped). If resize fails, **do not** publish original bytes to R2
 5. Put web copy on R2 → `https://media.morjan.family/<trip-id>/<album-slug>/...`
 6. Insert `trip_photos` row (with `album_id`); set trip `cover_url` if empty
 7. Return `{ ok, photoId, mediaUrl, album, albumSlug, driveFileId, driveConfirmed, safeToMoveOffPhone }`

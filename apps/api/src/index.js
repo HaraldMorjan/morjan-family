@@ -66,6 +66,25 @@ const requireUploadToken = (request, environment) => {
   return { ok: true };
 };
 
+const INTERNAL_CATALOG_KEYS = new Set([
+  "r2Key",
+  "r2_key",
+  "driveFileId",
+  "drive_file_id",
+  "driveFolderId",
+  "drive_folder_id"
+]);
+
+const omitInternalCatalogFields = (record) => {
+  if (!record || typeof record !== "object") {
+    return record;
+  }
+
+  return Object.fromEntries(
+    Object.entries(record).filter(([key]) => !INTERNAL_CATALOG_KEYS.has(key))
+  );
+};
+
 const readJsonBody = async (request) => {
   try {
     return await request.json();
@@ -92,7 +111,7 @@ const listTrips = async (environment) => {
     `
   ).all();
 
-  return result.results || [];
+  return (result.results || []).map(omitInternalCatalogFields);
 };
 
 const listTripAlbums = async (environment, tripId) => {
@@ -103,7 +122,6 @@ const listTripAlbums = async (environment, tripId) => {
       albums.trip_id AS tripId,
       albums.slug,
       albums.name,
-      albums.drive_folder_id AS driveFolderId,
       albums.created_at AS createdAt,
       COUNT(trip_photos.id) AS photoCount
     FROM albums
@@ -116,7 +134,7 @@ const listTripAlbums = async (environment, tripId) => {
     .bind(tripId)
     .all();
 
-  return result.results || [];
+  return (result.results || []).map(omitInternalCatalogFields);
 };
 
 const listTripPhotos = async (environment, tripId, albumSlug = null) => {
@@ -136,9 +154,7 @@ const listTripPhotos = async (environment, tripId, albumSlug = null) => {
       trip_photos.album_id AS albumId,
       albums.slug AS albumSlug,
       albums.name AS albumName,
-      trip_photos.r2_key AS r2Key,
       trip_photos.media_url AS mediaUrl,
-      trip_photos.drive_file_id AS driveFileId,
       trip_photos.width,
       trip_photos.height,
       trip_photos.bytes,
@@ -153,7 +169,7 @@ const listTripPhotos = async (environment, tripId, albumSlug = null) => {
     .bind(...bindings)
     .all();
 
-  return result.results || [];
+  return (result.results || []).map(omitInternalCatalogFields);
 };
 
 export const createTrip = async (environment, title) => {
@@ -408,6 +424,11 @@ const handleRequest = async (request, environment) => {
     );
   }
 
+  const tokenCheck = requireUploadToken(request, environment);
+  if (!tokenCheck.ok) {
+    return tokenCheck.response;
+  }
+
   if (pathName === "/trips") {
     if (request.method === "GET") {
       try {
@@ -423,11 +444,6 @@ const handleRequest = async (request, environment) => {
     }
 
     if (request.method === "POST") {
-      const tokenCheck = requireUploadToken(request, environment);
-      if (!tokenCheck.ok) {
-        return tokenCheck.response;
-      }
-
       const body = await readJsonBody(request);
       if (!body || typeof body !== "object") {
         return jsonResponse(
@@ -464,11 +480,6 @@ const handleRequest = async (request, environment) => {
     }
 
     if (request.method === "POST") {
-      const tokenCheck = requireUploadToken(request, environment);
-      if (!tokenCheck.ok) {
-        return tokenCheck.response;
-      }
-
       const body = await readJsonBody(request);
       if (!body || typeof body !== "object") {
         return jsonResponse(
@@ -512,11 +523,6 @@ const handleRequest = async (request, environment) => {
     }
 
     if (request.method === "POST") {
-      const tokenCheck = requireUploadToken(request, environment);
-      if (!tokenCheck.ok) {
-        return tokenCheck.response;
-      }
-
       const uploadResult = await handlePhotoUpload(
         request,
         environment,
