@@ -11,7 +11,8 @@ import {
 } from "./drive.js";
 import { createWebCopy } from "./resize.js";
 
-const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+// Cloudflare Images `.input()` accepts at most 20 MB.
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 const DEFAULT_ALBUM_NAME = "Unsorted";
 const ALLOWED_CONTENT_TYPES = new Set([
   "image/jpeg",
@@ -398,7 +399,7 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
     return {
       statusCode: 413,
       payload: {
-        error: `Photo too large. Max ${MAX_UPLOAD_BYTES} bytes (25 MB).`
+        error: `Photo too large. Max ${MAX_UPLOAD_BYTES} bytes (20 MB).`
       }
     };
   }
@@ -504,7 +505,21 @@ export const handlePhotoUpload = async (request, environment, tripId) => {
     };
   }
 
-  const webCopy = await createWebCopy(environment, originalBytes, contentType);
+  let webCopy;
+  try {
+    webCopy = await createWebCopy(environment, originalBytes);
+  } catch (resizeError) {
+    return {
+      statusCode: 502,
+      payload: {
+        error:
+          "Drive original saved, but web-copy resize failed. Original was NOT published to the gallery. Retry upload.",
+        driveFileId,
+        detail: String(resizeError)
+      }
+    };
+  }
+
   const r2Key = `${tripId}/${albumRow.slug}/${stamp}-${photoId}.${webCopy.extension}`;
   const mediaBase = (
     environment.MEDIA_PUBLIC_BASE || "https://media.morjan.family"

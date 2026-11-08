@@ -28,7 +28,8 @@ test("passes fresh ReadableStreams to the Images binding", async () => {
             assert.deepEqual(options, {
               width: 2048,
               height: 2048,
-              fit: "scale-down"
+              fit: "scale-down",
+              metadata: "none"
             });
             return this;
           },
@@ -50,11 +51,7 @@ test("passes fresh ReadableStreams to the Images binding", async () => {
     }
   };
 
-  const result = await createWebCopy(
-    environment,
-    original.buffer,
-    "image/jpeg"
-  );
+  const result = await createWebCopy(environment, original.buffer);
 
   assert.notEqual(infoStream, inputStream);
   assert.deepEqual(new Uint8Array(result.bytes), transformed);
@@ -63,4 +60,36 @@ test("passes fresh ReadableStreams to the Images binding", async () => {
   assert.equal(result.width, 4032);
   assert.equal(result.height, 3024);
   assert.equal(result.resized, true);
+});
+
+test("refuses to publish original bytes when the Images binding is missing", async () => {
+  await assert.rejects(
+    () => createWebCopy({}, new Uint8Array([1, 2, 3]).buffer),
+    /IMAGES binding missing/
+  );
+});
+
+test("refuses to publish original bytes when transform fails", async () => {
+  const environment = {
+    IMAGES: {
+      async info() {
+        return { width: 100, height: 80 };
+      },
+      input() {
+        return {
+          transform() {
+            return this;
+          },
+          async output() {
+            throw new Error("too large");
+          }
+        };
+      }
+    }
+  };
+
+  await assert.rejects(
+    () => createWebCopy(environment, new Uint8Array([1, 2, 3]).buffer),
+    /Web-copy resize failed/
+  );
 });
